@@ -1,19 +1,17 @@
-// Middleware for internationalization
-import createMiddleware from 'next-intl/middleware';
-import { locales } from './i18n/request';
+import createMiddleware from "next-intl/middleware";
 
 export default createMiddleware({
   // A list of all locales that are supported
-  locales,
+  locales: ["en", "ar"],
 
   // Used when no locale matches
-  defaultLocale: 'en',
-
-  // Always use locale prefix
-  localePrefix: 'always'
+  defaultLocale: "en",
+  
+  // Always redirect to default locale
+  localePrefix: "always",
 });
 
 export const config = {
   // Match only internationalized pathnames
-  matcher: ['/', '/(ar|en)/:path*']
+  matcher: ["/((?!api|_next|_vercel|.*\\..*).*)"],
 };

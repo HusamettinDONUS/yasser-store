@@ -1,24 +1,31 @@
-'use client';
+"use client";
 
 // Admin dashboard page component
-import React, { useEffect, useState } from 'react';
-import { useTranslations } from 'next-intl';
-import { 
-  Package, 
-  ShoppingCart, 
-  Users, 
+import React, { useEffect, useState } from "react";
+import { useTranslations } from "next-intl";
+import {
+  Package,
+  ShoppingCart,
+  Users,
   DollarSign,
   TrendingUp,
   TrendingDown,
-  Eye
-} from 'lucide-react';
-import { AdminLayout } from '@/components/admin/AdminLayout';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { getAllProducts } from '@/lib/services/products';
-import { Product } from '@/lib/types';
-import { toast } from 'sonner';
+  Eye,
+} from "lucide-react";
+import { AdminLayout } from "@/components/admin/AdminLayout";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { getAllProducts } from "@/lib/services/products";
+import { Product } from "@/lib/types";
+import { toast } from "sonner";
+import Link from "next/link";
 
 /**
  * Admin dashboard page component
@@ -26,7 +33,7 @@ import { toast } from 'sonner';
 export default function AdminDashboardPage() {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
-  const t = useTranslations();
+  // const t = useTranslations();
 
   /**
    * Fetch dashboard data
@@ -37,8 +44,8 @@ export default function AdminDashboardPage() {
       const fetchedProducts = await getAllProducts();
       setProducts(fetchedProducts);
     } catch (error) {
-      console.error('Error fetching dashboard data:', error);
-      toast.error('Failed to load dashboard data');
+      console.error("Error fetching dashboard data:", error);
+      toast.error("Failed to load dashboard data");
     } finally {
       setLoading(false);
     }
@@ -49,11 +56,17 @@ export default function AdminDashboardPage() {
    */
   const getStatistics = () => {
     const totalProducts = products.length;
-    const inStockProducts = products.filter(p => p.inStock).length;
+    const inStockProducts = products.filter((p) => p.inStock).length;
     const outOfStockProducts = totalProducts - inStockProducts;
-    const featuredProducts = products.filter(p => p.featured).length;
-    const totalValue = products.reduce((sum, p) => sum + (p.price * (p.stockQuantity || 0)), 0);
-    const averagePrice = totalProducts > 0 ? products.reduce((sum, p) => sum + p.price, 0) / totalProducts : 0;
+    const featuredProducts = products.filter((p) => p.featured).length;
+    const totalValue = products.reduce(
+      (sum, p) => sum + p.price * (p.stockQuantity || 0),
+      0
+    );
+    const averagePrice =
+      totalProducts > 0
+        ? products.reduce((sum, p) => sum + p.price, 0) / totalProducts
+        : 0;
 
     return {
       totalProducts,
@@ -61,7 +74,7 @@ export default function AdminDashboardPage() {
       outOfStockProducts,
       featuredProducts,
       totalValue,
-      averagePrice
+      averagePrice,
     };
   };
 
@@ -70,7 +83,10 @@ export default function AdminDashboardPage() {
    */
   const getRecentProducts = () => {
     return products
-      .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+      .sort(
+        (a, b) =>
+          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+      )
       .slice(0, 5);
   };
 
@@ -78,9 +94,9 @@ export default function AdminDashboardPage() {
    * Format currency
    */
   const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD'
+    return new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: "USD",
     }).format(amount);
   };
 
@@ -96,8 +112,10 @@ export default function AdminDashboardPage() {
       <div className="space-y-6">
         {/* Page Header */}
         <div>
-          <h1 className="text-3xl font-bold">{t('admin.dashboard')}</h1>
-          <p className="text-muted-foreground">Welcome to your store management dashboard</p>
+          {/* <h1 className="text-3xl font-bold">{t("admin.dashboard")}</h1> */}
+          <p className="text-muted-foreground">
+            Welcome to your store management dashboard
+          </p>
         </div>
 
         {/* Statistics Cards */}
@@ -105,7 +123,9 @@ export default function AdminDashboardPage() {
           {/* Total Products */}
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Total Products</CardTitle>
+              <CardTitle className="text-sm font-medium">
+                Total Products
+              </CardTitle>
               <Package className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
@@ -123,7 +143,9 @@ export default function AdminDashboardPage() {
               <TrendingUp className="h-4 w-4 text-green-600" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-green-600">{stats.inStockProducts}</div>
+              <div className="text-2xl font-bold text-green-600">
+                {stats.inStockProducts}
+              </div>
               <p className="text-xs text-muted-foreground">
                 {stats.outOfStockProducts} out of stock
               </p>
@@ -133,11 +155,15 @@ export default function AdminDashboardPage() {
           {/* Total Value */}
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Inventory Value</CardTitle>
+              <CardTitle className="text-sm font-medium">
+                Inventory Value
+              </CardTitle>
               <DollarSign className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{formatCurrency(stats.totalValue)}</div>
+              <div className="text-2xl font-bold">
+                {formatCurrency(stats.totalValue)}
+              </div>
               <p className="text-xs text-muted-foreground">
                 Avg: {formatCurrency(stats.averagePrice)}
               </p>
@@ -152,9 +178,7 @@ export default function AdminDashboardPage() {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">0</div>
-              <p className="text-xs text-muted-foreground">
-                No orders yet
-              </p>
+              <p className="text-xs text-muted-foreground">No orders yet</p>
             </CardContent>
           </Card>
         </div>
@@ -180,7 +204,10 @@ export default function AdminDashboardPage() {
               ) : (
                 <div className="space-y-4">
                   {recentProducts.map((product) => (
-                    <div key={product.id} className="flex items-center justify-between p-3 border rounded-lg">
+                    <div
+                      key={product.id}
+                      className="flex items-center justify-between p-3 border rounded-lg"
+                    >
                       <div className="flex-1">
                         <h4 className="font-medium">{product.name}</h4>
                         <p className="text-sm text-muted-foreground">
@@ -189,10 +216,14 @@ export default function AdminDashboardPage() {
                       </div>
                       <div className="flex items-center gap-2">
                         {product.featured && (
-                          <Badge variant="secondary" className="text-xs">Featured</Badge>
+                          <Badge variant="secondary" className="text-xs">
+                            Featured
+                          </Badge>
                         )}
                         {!product.inStock && (
-                          <Badge variant="destructive" className="text-xs">Out of Stock</Badge>
+                          <Badge variant="destructive" className="text-xs">
+                            Out of Stock
+                          </Badge>
                         )}
                         <Button variant="ghost" size="sm">
                           <Eye className="h-4 w-4" />
@@ -209,35 +240,33 @@ export default function AdminDashboardPage() {
           <Card>
             <CardHeader>
               <CardTitle>Quick Actions</CardTitle>
-              <CardDescription>
-                Common tasks and shortcuts
-              </CardDescription>
+              <CardDescription>Common tasks and shortcuts</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-1 gap-3">
                 <Button className="justify-start" asChild>
-                  <a href="/admin/products/new">
+                  <Link href="/admin/products/new">
                     <Package className="mr-2 h-4 w-4" />
                     Add New Product
-                  </a>
+                  </Link>
                 </Button>
                 <Button variant="outline" className="justify-start" asChild>
-                  <a href="/admin/products">
+                  <Link href="/admin/products">
                     <Eye className="mr-2 h-4 w-4" />
                     View All Products
-                  </a>
+                  </Link>
                 </Button>
                 <Button variant="outline" className="justify-start" asChild>
-                  <a href="/admin/orders">
+                  <Link href="/admin/orders">
                     <ShoppingCart className="mr-2 h-4 w-4" />
                     Manage Orders
-                  </a>
+                  </Link>
                 </Button>
                 <Button variant="outline" className="justify-start" asChild>
-                  <a href="/admin/customers">
+                  <Link href="/admin/customers">
                     <Users className="mr-2 h-4 w-4" />
                     View Customers
-                  </a>
+                  </Link>
                 </Button>
               </div>
             </CardContent>
@@ -252,24 +281,29 @@ export default function AdminDashboardPage() {
                 <TrendingDown className="h-5 w-5 text-orange-500" />
                 Low Stock Alert
               </CardTitle>
-              <CardDescription>
-                Products that need restocking
-              </CardDescription>
+              <CardDescription>Products that need restocking</CardDescription>
             </CardHeader>
             <CardContent>
               {(() => {
-                const lowStockProducts = products.filter(p => p.inStock && (p.stockQuantity || 0) < 10);
-                
+                const lowStockProducts = products.filter(
+                  (p) => p.inStock && (p.stockQuantity || 0) < 10
+                );
+
                 if (lowStockProducts.length === 0) {
                   return (
-                    <p className="text-muted-foreground">All products are well stocked!</p>
+                    <p className="text-muted-foreground">
+                      All products are well stocked!
+                    </p>
                   );
                 }
-                
+
                 return (
                   <div className="space-y-2">
                     {lowStockProducts.map((product) => (
-                      <div key={product.id} className="flex items-center justify-between p-2 bg-orange-50 dark:bg-orange-950 rounded">
+                      <div
+                        key={product.id}
+                        className="flex items-center justify-between p-2 bg-orange-50 dark:bg-orange-950 rounded"
+                      >
                         <span className="font-medium">{product.name}</span>
                         <Badge variant="outline" className="text-orange-600">
                           {product.stockQuantity} left
