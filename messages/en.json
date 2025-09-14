@@ -1,0 +1,173 @@
+{
+  "common": {
+    "home": "Home",
+    "products": "Products",
+    "categories": "Categories",
+    "cart": "Cart",
+    "signin": "Sign In",
+    "signup": "Sign Up",
+    "signout": "Sign Out",
+    "profile": "Profile",
+    "orders": "Orders",
+    "admin": "Admin Panel",
+    "search": "Search",
+    "loading": "Loading...",
+    "error": "Error",
+    "success": "Success",
+    "cancel": "Cancel",
+    "save": "Save",
+    "delete": "Delete",
+    "edit": "Edit",
+    "add": "Add",
+    "view": "View",
+    "close": "Close",
+    "next": "Next",
+    "previous": "Previous",
+    "language": "Language"
+  },
+  "navigation": {
+    "allProducts": "All Products",
+    "featured": "Featured",
+    "newArrivals": "New Arrivals",
+    "sale": "Sale",
+    "about": "About Us",
+    "contact": "Contact",
+    "help": "Help",
+    "faq": "FAQ"
+  },
+  "hero": {
+    "title": "Premium",
+    "titleHighlight": "Fashion",
+    "titleEnd": "Collection",
+    "description": "Discover our curated selection of high-quality clothing that combines style, comfort, and sustainability.",
+    "shopNow": "Shop Now",
+    "viewFeatured": "View Featured",
+    "stats": {
+      "products": "Products",
+      "customers": "Happy Customers",
+      "support": "Support"
+    },
+    "features": {
+      "freeShipping": "Free Shipping",
+      "freeShippingDesc": "On orders over $100"
+    }
+  },
+  "products": {
+    "featured": "Featured Products",
+    "featuredDescription": "Discover our handpicked selection of premium clothing items that combine style, quality, and comfort",
+    "viewAllFeatured": "View All Featured Products",
+    "addToCart": "Add to Cart",
+    "outOfStock": "Out of Stock",
+    "inStock": "In Stock",
+    "onlyLeft": "Only {count} left in stock",
+    "colors": "Colors",
+    "sizes": "Sizes",
+    "price": "Price",
+    "description": "Description",
+    "details": "Details",
+    "reviews": "Reviews",
+    "relatedProducts": "Related Products",
+    "noProducts": "No products available at the moment.",
+    "browseAll": "Browse All Products",
+    "failedToLoad": "Failed to load products"
+  },
+  "categories": {
+    "title": "Shop by Category",
+    "description": "Explore our diverse collection of premium clothing across different categories",
+    "viewAll": "View All Products",
+    "shopNow": "Shop Now",
+    "shirts": {
+      "name": "Shirts",
+      "description": "Casual & formal shirts for every occasion"
+    },
+    "pants": {
+      "name": "Pants",
+      "description": "Comfortable and stylish pants"
+    },
+    "dresses": {
+      "name": "Dresses",
+      "description": "Elegant dresses for special moments"
+    },
+    "jackets": {
+      "name": "Jackets",
+      "description": "Stay warm with our premium jackets"
+    },
+    "shoes": {
+      "name": "Shoes",
+      "description": "Step out in style with our footwear"
+    },
+    "accessories": {
+      "name": "Accessories",
+      "description": "Complete your look with accessories"
+    }
+  },
+  "footer": {
+    "description": "Your destination for premium quality clothing that combines style, comfort, and sustainability. Discover fashion that makes a statement.",
+    "quickLinks": "Quick Links",
+    "stayConnected": "Stay Connected",
+    "newsletter": "Subscribe to get updates on new arrivals and exclusive offers.",
+    "subscribe": "Subscribe",
+    "enterEmail": "Enter your email",
+    "copyright": "© {year} Yasser Store. All rights reserved.",
+    "privacy": "Privacy Policy",
+    "terms": "Terms of Service",
+    "shipping": "Shipping Info",
+    "returns": "Returns"
+  },
+  "auth": {
+    "signIn": "Sign In",
+    "signUp": "Sign Up",
+    "signOut": "Sign Out",
+    "email": "Email",
+    "password": "Password",
+    "confirmPassword": "Confirm Password",
+    "displayName": "Display Name",
+    "forgotPassword": "Forgot Password?",
+    "noAccount": "Don't have an account?",
+    "hasAccount": "Already have an account?",
+    "signInSuccess": "Signed in successfully",
+    "signUpSuccess": "Account created successfully",
+    "signOutSuccess": "Signed out successfully",
+    "signInError": "Failed to sign in",
+    "signUpError": "Failed to create account",
+    "signOutError": "Failed to sign out"
+  },
+  "cart": {
+    "title": "Shopping Cart",
+    "empty": "Your cart is empty",
+    "continueShopping": "Continue Shopping",
+    "checkout": "Checkout",
+    "subtotal": "Subtotal",
+    "total": "Total",
+    "quantity": "Quantity",
+    "remove": "Remove",
+    "update": "Update",
+    "itemAdded": "Item added to cart",
+    "itemRemoved": "Item removed from cart",
+    "itemUpdated": "Cart updated"
+  },
+  "admin": {
+    "dashboard": "Dashboard",
+    "products": "Products",
+    "orders": "Orders",
+    "customers": "Customers",
+    "settings": "Settings",
+    "addProduct": "Add Product",
+    "editProduct": "Edit Product",
+    "deleteProduct": "Delete Product",
+    "productName": "Product Name",
+    "productDescription": "Product Description",
+    "productPrice": "Product Price",
+    "productCategory": "Product Category",
+    "productImages": "Product Images",
+    "productSizes": "Product Sizes",
+    "productColors": "Product Colors",
+    "stockQuantity": "Stock Quantity",
+    "featured": "Featured",
+    "inStock": "In Stock",
+    "saveProduct": "Save Product",
+    "productSaved": "Product saved successfully",
+    "productDeleted": "Product deleted successfully",
+    "confirmDelete": "Are you sure you want to delete this product?"
+  }
+}
