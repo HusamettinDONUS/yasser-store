@@ -25,7 +25,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { useAuth } from '@/contexts/AuthContext';
-import { signOutUser } from '@/lib/services/auth';
+import { signOut } from 'next-auth/react';
 import { toast } from 'sonner';
 import { useState } from 'react';
 
@@ -48,7 +48,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
    */
   const handleSignOut = async () => {
     try {
-      await signOutUser();
+      await signOut({ redirect: false });
       toast.success(t('auth.signOutSuccess'));
       router.push(`/${locale}`);
     } catch (error) {

@@ -57,56 +57,50 @@ export function Footer() {
               </div>
             </div>
             
-            {/* Quick Links */}
+            {/* Gallery Links */}
             <div className="space-y-4">
-              <h3 className="text-lg font-semibold">{t('footer.quickLinks')}</h3>
+              <h3 className="text-lg font-semibold">Gallery</h3>
               <nav className="flex flex-col space-y-2">
                 <Link href={`/${locale}`} className="text-slate-400 hover:text-primary transition-colors text-sm">
-                  {t('common.home')}
+                  Home
                 </Link>
                 <Link href={`/${locale}/products`} className="text-slate-400 hover:text-primary transition-colors text-sm">
-                  {t('navigation.allProducts')}
+                  All Collections
                 </Link>
                 <Link href={`/${locale}/products?featured=true`} className="text-slate-400 hover:text-primary transition-colors text-sm">
-                  {t('navigation.featured')}
+                  Featured Pieces
                 </Link>
                 <Link href={`/${locale}/about`} className="text-slate-400 hover:text-primary transition-colors text-sm">
-                  {t('navigation.about')}
+                  About Gallery
                 </Link>
                 <Link href={`/${locale}/contact`} className="text-slate-400 hover:text-primary transition-colors text-sm">
-                  {t('navigation.contact')}
+                  Contact Us
                 </Link>
               </nav>
             </div>
             
-            {/* Categories */}
+            {/* Information */}
             <div className="space-y-4">
-              <h3 className="text-lg font-semibold">{t('common.categories')}</h3>
+              <h3 className="text-lg font-semibold">Information</h3>
               <nav className="flex flex-col space-y-2">
-                <Link href={`/${locale}/products?category=shirts`} className="text-slate-400 hover:text-primary transition-colors text-sm">
-                  {t('categories.shirts.name')}
+                <Link href={`/${locale}/about`} className="text-slate-400 hover:text-primary transition-colors text-sm">
+                  About Us
                 </Link>
-                <Link href={`/${locale}/products?category=pants`} className="text-slate-400 hover:text-primary transition-colors text-sm">
-                  {t('categories.pants.name')}
+                <Link href={`/${locale}/collections`} className="text-slate-400 hover:text-primary transition-colors text-sm">
+                  Our Collections
                 </Link>
-                <Link href={`/${locale}/products?category=dresses`} className="text-slate-400 hover:text-primary transition-colors text-sm">
-                  {t('categories.dresses.name')}
+                <Link href={`/${locale}/designers`} className="text-slate-400 hover:text-primary transition-colors text-sm">
+                  Featured Designers
                 </Link>
-                <Link href={`/${locale}/products?category=jackets`} className="text-slate-400 hover:text-primary transition-colors text-sm">
-                  {t('categories.jackets.name')}
-                </Link>
-                <Link href={`/${locale}/products?category=shoes`} className="text-slate-400 hover:text-primary transition-colors text-sm">
-                  {t('categories.shoes.name')}
-                </Link>
-                <Link href={`/${locale}/products?category=accessories`} className="text-slate-400 hover:text-primary transition-colors text-sm">
-                  {t('categories.accessories.name')}
+                <Link href={`/${locale}/contact`} className="text-slate-400 hover:text-primary transition-colors text-sm">
+                  Get In Touch
                 </Link>
               </nav>
             </div>
             
             {/* Contact & Newsletter */}
             <div className="space-y-4">
-              <h3 className="text-lg font-semibold">{t('footer.stayConnected')}</h3>
+              <h3 className="text-lg font-semibold">Stay Updated</h3>
               
               {/* Contact Info */}
               <div className="space-y-3">
@@ -127,17 +121,17 @@ export function Footer() {
               {/* Newsletter */}
               <div className="space-y-2">
                 <p className="text-sm text-slate-400">
-                  {t('footer.newsletter')}
+                  Subscribe to get notified about new collections and featured pieces in our gallery.
                 </p>
                 <form onSubmit={handleNewsletterSubmit} className="flex space-x-2">
                   <Input 
                     type="email" 
-                    placeholder={t('footer.enterEmail')} 
+                    placeholder="Enter your email" 
                     className="bg-slate-800 border-slate-700 text-slate-100 placeholder:text-slate-400"
                     required
                   />
                   <Button type="submit" size="sm">
-                    {t('footer.subscribe')}
+                    Subscribe
                   </Button>
                 </form>
               </div>

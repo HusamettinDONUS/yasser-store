@@ -86,10 +86,12 @@ export function CategoriesSection() {
     <section className="py-16 bg-slate-50 dark:bg-slate-900">
       <div className="container mx-auto px-4">
         {/* Section Header */}
-        <div className="text-center mb-12">
-          <h2 className="text-3xl md:text-4xl font-bold mb-4">{t('categories.title')}</h2>
+        <div className="text-center space-y-4 mb-12">
+          <h2 className="text-3xl md:text-4xl font-bold">
+            Gallery Collections
+          </h2>
           <p className="text-muted-foreground max-w-2xl mx-auto">
-            {t('categories.description')}
+            Browse our carefully organized fashion collections. Each category showcases unique styles and designs for every occasion.
           </p>
         </div>
         

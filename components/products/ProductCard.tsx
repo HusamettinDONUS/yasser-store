@@ -96,12 +96,14 @@ export function ProductCard({
           </div>
         )}
 
-        {/* Quick Add to Cart */}
-        {showQuickActions && product.inStock && (
+        {/* Quick View Button */}
+        {showQuickActions && (
           <div className="absolute bottom-2 left-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
-            <Button size="sm" className="w-full">
-              <ShoppingCart className="mr-2 h-4 w-4" />
-              {t('products.addToCart')}
+            <Button size="sm" className="w-full" asChild>
+              <Link href={`/${locale}/products/${product.id}`}>
+                <Eye className="mr-2 h-4 w-4" />
+                View Details
+              </Link>
             </Button>
           </div>
         )}

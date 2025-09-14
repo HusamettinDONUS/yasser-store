@@ -1,34 +1,25 @@
-// Authentication service for Firebase Auth
-import { 
-  signInWithEmailAndPassword,
-  signOut,
-  onAuthStateChanged,
-  User as FirebaseUser,
-  createUserWithEmailAndPassword,
-  updateProfile
-} from 'firebase/auth';
-import { doc, getDoc, setDoc, Timestamp } from 'firebase/firestore';
-import { auth, db } from '../firebase';
-import { User } from '../types';
-
-const USERS_COLLECTION = 'users';
-const ADMIN_EMAIL = process.env.ADMIN_EMAIL || 'admin@yasserstore.com';
+// Authentication service for NextAuth.js
+import { signIn, signOut, getSession } from 'next-auth/react';
 
 /**
  * Sign in with email and password
  */
-export async function signInWithEmail(email: string, password: string): Promise<User> {
+export async function signInWithEmail(email: string, password: string) {
   try {
-    const userCredential = await signInWithEmailAndPassword(auth, email, password);
-    const firebaseUser = userCredential.user;
+    const result = await signIn('credentials', {
+      email,
+      password,
+      redirect: false,
+    });
     
-    // Get or create user document
-    const user = await getOrCreateUserDocument(firebaseUser);
+    if (result?.error) {
+      throw new Error(getAuthErrorMessage(result.error));
+    }
     
-    return user;
+    return result;
   } catch (error: any) {
     console.error('Error signing in:', error);
-    throw new Error(getAuthErrorMessage(error.code));
+    throw new Error(error.message || 'Failed to sign in');
   }
 }
 
@@ -38,24 +29,38 @@ export async function signInWithEmail(email: string, password: string): Promise<
 export async function signUpWithEmail(
   email: string, 
   password: string, 
-  displayName?: string
-): Promise<User> {
+  name?: string
+) {
   try {
-    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-    const firebaseUser = userCredential.user;
+    const response = await fetch('/api/auth/register', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ email, password, name }),
+    });
     
-    // Update display name if provided
-    if (displayName) {
-      await updateProfile(firebaseUser, { displayName });
+    const data = await response.json();
+    
+    if (!response.ok) {
+      throw new Error(data.error || 'Failed to create account');
     }
     
-    // Create user document
-    const user = await getOrCreateUserDocument(firebaseUser);
+    // Auto sign in after successful registration
+    const signInResult = await signIn('credentials', {
+      email,
+      password,
+      redirect: false,
+    });
     
-    return user;
+    if (signInResult?.error) {
+      throw new Error('Account created but failed to sign in');
+    }
+    
+    return data.user;
   } catch (error: any) {
     console.error('Error signing up:', error);
-    throw new Error(getAuthErrorMessage(error.code));
+    throw new Error(error.message || 'Failed to create account');
   }
 }
 
@@ -64,7 +69,7 @@ export async function signUpWithEmail(
  */
 export async function signOutUser(): Promise<void> {
   try {
-    await signOut(auth);
+    await signOut({ redirect: false });
   } catch (error) {
     console.error('Error signing out:', error);
     throw new Error('Failed to sign out');
@@ -72,69 +77,16 @@ export async function signOutUser(): Promise<void> {
 }
 
 /**
- * Get or create user document in Firestore
+ * Get current user session
  */
-export async function getOrCreateUserDocument(firebaseUser: FirebaseUser): Promise<User> {
+export async function getCurrentUser() {
   try {
-    const userRef = doc(db, USERS_COLLECTION, firebaseUser.uid);
-    const userSnap = await getDoc(userRef);
-    
-    if (userSnap.exists()) {
-      const userData = userSnap.data();
-      return {
-        id: firebaseUser.uid,
-        email: firebaseUser.email!,
-        displayName: firebaseUser.displayName || userData.displayName,
-        isAdmin: userData.isAdmin || false,
-        createdAt: userData.createdAt?.toDate() || new Date()
-      };
-    } else {
-      // Create new user document
-      const isAdmin = firebaseUser.email === ADMIN_EMAIL;
-      const newUser: Omit<User, 'id'> = {
-        email: firebaseUser.email!,
-        displayName: firebaseUser.displayName || undefined,
-        isAdmin,
-        createdAt: new Date()
-      };
-      
-      await setDoc(userRef, {
-        ...newUser,
-        createdAt: Timestamp.fromDate(newUser.createdAt)
-      });
-      
-      return {
-        id: firebaseUser.uid,
-        ...newUser
-      };
-    }
+    const session = await getSession();
+    return session?.user || null;
   } catch (error) {
-    console.error('Error getting/creating user document:', error);
-    throw new Error('Failed to get user data');
+    console.error('Error getting current user:', error);
+    return null;
   }
-}
-
-/**
- * Get current user
- */
-export function getCurrentUser(): Promise<User | null> {
-  return new Promise((resolve) => {
-    const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
-      unsubscribe();
-      
-      if (firebaseUser) {
-        try {
-          const user = await getOrCreateUserDocument(firebaseUser);
-          resolve(user);
-        } catch (error) {
-          console.error('Error getting current user:', error);
-          resolve(null);
-        }
-      } else {
-        resolve(null);
-      }
-    });
-  });
 }
 
 /**
@@ -142,8 +94,8 @@ export function getCurrentUser(): Promise<User | null> {
  */
 export async function isCurrentUserAdmin(): Promise<boolean> {
   try {
-    const user = await getCurrentUser();
-    return user?.isAdmin || false;
+    const session = await getSession();
+    return (session?.user as any)?.isAdmin || false;
   } catch (error) {
     console.error('Error checking admin status:', error);
     return false;
@@ -151,44 +103,39 @@ export async function isCurrentUserAdmin(): Promise<boolean> {
 }
 
 /**
- * Listen to auth state changes
- */
-export function onAuthStateChange(callback: (user: User | null) => void): () => void {
-  return onAuthStateChanged(auth, async (firebaseUser) => {
-    if (firebaseUser) {
-      try {
-        const user = await getOrCreateUserDocument(firebaseUser);
-        callback(user);
-      } catch (error) {
-        console.error('Error in auth state change:', error);
-        callback(null);
-      }
-    } else {
-      callback(null);
-    }
-  });
-}
-
-/**
  * Get user-friendly error messages
  */
 function getAuthErrorMessage(errorCode: string): string {
   switch (errorCode) {
-    case 'auth/user-not-found':
-      return 'No user found with this email address.';
-    case 'auth/wrong-password':
-      return 'Incorrect password.';
-    case 'auth/email-already-in-use':
-      return 'An account with this email already exists.';
-    case 'auth/weak-password':
-      return 'Password should be at least 6 characters.';
-    case 'auth/invalid-email':
-      return 'Invalid email address.';
-    case 'auth/too-many-requests':
-      return 'Too many failed attempts. Please try again later.';
-    case 'auth/network-request-failed':
-      return 'Network error. Please check your connection.';
+    case 'CredentialsSignin':
+      return 'Invalid email or password.';
+    case 'EmailNotVerified':
+      return 'Please verify your email address.';
+    case 'AccountNotLinked':
+      return 'Account is not linked to this provider.';
+    case 'CallbackRouteError':
+      return 'Authentication callback error.';
+    case 'Signin':
+      return 'Sign in error occurred.';
+    case 'OAuthSignin':
+      return 'OAuth sign in error.';
+    case 'OAuthCallback':
+      return 'OAuth callback error.';
+    case 'OAuthCreateAccount':
+      return 'Could not create OAuth account.';
+    case 'EmailCreateAccount':
+      return 'Could not create account with email.';
+    case 'Callback':
+      return 'Callback error occurred.';
+    case 'OAuthAccountNotLinked':
+      return 'OAuth account is not linked.';
+    case 'EmailSignin':
+      return 'Email sign in error.';
+    case 'CredentialsSignup':
+      return 'Could not create account.';
+    case 'SessionRequired':
+      return 'Please sign in to access this page.';
     default:
-      return 'An error occurred during authentication.';
+      return 'An authentication error occurred.';
   }
 }

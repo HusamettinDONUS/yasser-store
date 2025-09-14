@@ -1,9 +1,9 @@
 'use client';
 
-// Authentication context for managing user state across the application
-import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
+// Authentication context for managing user state with NextAuth.js
+import React, { createContext, useContext, ReactNode } from 'react';
+import { useSession } from 'next-auth/react';
 import { User } from '@/lib/types';
-import { onAuthStateChange, getCurrentUser } from '@/lib/services/auth';
 
 interface AuthContextType {
   user: User | null;
@@ -18,34 +18,21 @@ interface AuthProviderProps {
 }
 
 /**
- * Authentication provider component
+ * Authentication provider component using NextAuth.js
  */
 export function AuthProvider({ children }: AuthProviderProps) {
-  const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    // Set up auth state listener
-    const unsubscribe = onAuthStateChange((user) => {
-      setUser(user);
-      setLoading(false);
-    });
-
-    // Initial auth check
-    getCurrentUser()
-      .then((user) => {
-        setUser(user);
-        setLoading(false);
-      })
-      .catch((error) => {
-        console.error('Error getting current user:', error);
-        setLoading(false);
-      });
-
-    return unsubscribe;
-  }, []);
-
-  const isAdmin = user?.isAdmin || false;
+  const { data: session, status } = useSession();
+  
+  const loading = status === 'loading';
+  const user = session?.user ? {
+    id: session.user.id || '',
+    email: session.user.email || '',
+    displayName: session.user.name,
+    isAdmin: (session.user as any).isAdmin || false,
+    createdAt: new Date() // This would come from the database in a real app
+  } as User : null;
+  
+  const isAdmin = (session?.user as any)?.isAdmin || false;
 
   const value: AuthContextType = {
     user,

@@ -22,25 +22,25 @@ export function HeroSection() {
           <div className="space-y-8">
             <div className="space-y-4">
               <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight">
-                {t('hero.title')}
-                <span className="text-primary block">{t('hero.titleHighlight')}</span>
-                {t('hero.titleEnd')}
+                Fashion
+                <span className="text-primary block">Gallery</span>
+                Showcase
               </h1>
               <p className="text-lg md:text-xl text-muted-foreground max-w-lg">
-                {t('hero.description')}
+                Explore our curated collection of premium fashion pieces. A visual journey through style, elegance, and craftsmanship.
               </p>
             </div>
             
             <div className="flex flex-col sm:flex-row gap-4">
               <Button size="lg" asChild className="group">
                 <Link href={`/${locale}/products`}>
-                  {t('hero.shopNow')}
+                  Explore Gallery
                   <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
                 </Link>
               </Button>
               <Button size="lg" variant="outline" asChild>
                 <Link href={`/${locale}/products?featured=true`}>
-                  {t('hero.viewFeatured')}
+                  Featured Pieces
                 </Link>
               </Button>
             </div>
@@ -49,15 +49,15 @@ export function HeroSection() {
             <div className="grid grid-cols-3 gap-8 pt-8 border-t">
               <div className="text-center">
                 <div className="text-2xl md:text-3xl font-bold text-primary">500+</div>
-                <div className="text-sm text-muted-foreground">{t('hero.stats.products')}</div>
+                <div className="text-sm text-muted-foreground">Fashion Pieces</div>
               </div>
               <div className="text-center">
-                <div className="text-2xl md:text-3xl font-bold text-primary">10k+</div>
-                <div className="text-sm text-muted-foreground">{t('hero.stats.customers')}</div>
+                <div className="text-2xl md:text-3xl font-bold text-primary">50+</div>
+                <div className="text-sm text-muted-foreground">Collections</div>
               </div>
               <div className="text-center">
                 <div className="text-2xl md:text-3xl font-bold text-primary">24/7</div>
-                <div className="text-sm text-muted-foreground">{t('hero.stats.support')}</div>
+                <div className="text-sm text-muted-foreground">Gallery Access</div>
               </div>
             </div>
           </div>
@@ -76,8 +76,8 @@ export function HeroSection() {
               </div>
               
               <div className="absolute -bottom-4 -left-4 bg-background border shadow-lg rounded-lg p-4">
-                <div className="text-sm font-medium">{t('hero.features.freeShipping')}</div>
-                <div className="text-xs text-muted-foreground">{t('hero.features.freeShippingDesc')}</div>
+                <div className="text-sm font-medium">Virtual Gallery</div>
+                <div className="text-xs text-muted-foreground">Explore fashion online</div>
               </div>
             </div>
             

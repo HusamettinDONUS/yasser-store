@@ -13,7 +13,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { signInWithEmail } from '@/lib/services/auth';
+import { signIn } from 'next-auth/react';
 import { toast } from 'sonner';
 
 /**
@@ -50,9 +50,18 @@ export default function SignInPage() {
   const onSubmit = async (data: SignInFormData) => {
     try {
       setIsLoading(true);
-      await signInWithEmail(data.email, data.password);
-      toast.success(t('auth.signInSuccess'));
-      router.push(`/${locale}`);
+      const result = await signIn('credentials', {
+        email: data.email,
+        password: data.password,
+        redirect: false,
+      });
+      
+      if (result?.error) {
+        toast.error(t('auth.signInError'));
+      } else {
+        toast.success(t('auth.signInSuccess'));
+        router.push(`/${locale}`);
+      }
     } catch (error: any) {
       toast.error(error.message || t('auth.signInError'));
     } finally {

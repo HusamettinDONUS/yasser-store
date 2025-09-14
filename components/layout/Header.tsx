@@ -17,18 +17,18 @@ import {
 import { Badge } from '@/components/ui/badge';
 import { LanguageSwitcher } from '@/components/ui/language-switcher';
 import { useAuth } from '@/contexts/AuthContext';
-import { signOutUser } from '@/lib/services/auth';
+import { signOut } from 'next-auth/react';
 import { ProductCategory } from '@/lib/types';
 import { toast } from 'sonner';
 
 interface HeaderProps {
-  cartItemCount?: number;
+  // Gallery-focused header - no cart functionality
 }
 
 /**
  * Main header navigation component
  */
-export function Header({ cartItemCount = 0 }: HeaderProps) {
+export function Header({}: HeaderProps) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { user, isAdmin } = useAuth();
   const router = useRouter();
@@ -40,7 +40,7 @@ export function Header({ cartItemCount = 0 }: HeaderProps) {
    */
   const handleSignOut = async () => {
     try {
-      await signOutUser();
+      await signOut({ redirect: false });
       toast.success(t('auth.signOutSuccess'));
       router.push(`/${locale}`);
     } catch (error) {
@@ -100,21 +100,6 @@ export function Header({ cartItemCount = 0 }: HeaderProps) {
           <div className="flex items-center space-x-4">
             {/* Language Switcher */}
             <LanguageSwitcher />
-            
-            {/* Cart */}
-            <Link href={`/${locale}/cart`} className="relative">
-              <Button variant="ghost" size="icon">
-                <ShoppingBag className="h-5 w-5" />
-                {cartItemCount > 0 && (
-                  <Badge 
-                    variant="destructive" 
-                    className="absolute -top-2 -right-2 h-5 w-5 flex items-center justify-center p-0 text-xs"
-                  >
-                    {cartItemCount}
-                  </Badge>
-                )}
-              </Button>
-            </Link>
 
             {/* User Menu */}
             {user ? (

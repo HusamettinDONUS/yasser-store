@@ -85,23 +85,14 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
   };
 
   /**
-   * Handle add to cart
+   * Handle contact for inquiry
    */
-  const handleAddToCart = () => {
+  const handleContactInquiry = () => {
     if (!product) return;
     
-    if (product.sizes.length > 0 && !selectedSize) {
-      toast.error('Please select a size');
-      return;
-    }
-    
-    if (product.colors.length > 0 && !selectedColor) {
-      toast.error('Please select a color');
-      return;
-    }
-    
-    // TODO: Implement add to cart functionality
-    toast.success(t('cart.itemAdded'));
+    const message = `Hi, I'm interested in ${product.name}. Could you provide more information?`;
+    const whatsappUrl = `https://wa.me/1234567890?text=${encodeURIComponent(message)}`;
+    window.open(whatsappUrl, '_blank');
   };
 
   /**
@@ -302,32 +293,8 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
                 </div>
               )}
 
-              {/* Quantity and Add to Cart */}
+              {/* Contact and Inquiry */}
               <div className="space-y-4">
-                {/* Quantity */}
-                <div>
-                  <h3 className="font-semibold mb-3">{t('cart.quantity')}</h3>
-                  <div className="flex items-center gap-3">
-                    <Button
-                      variant="outline"
-                      size="icon"
-                      onClick={() => handleQuantityChange(-1)}
-                      disabled={quantity <= 1}
-                    >
-                      <Minus className="h-4 w-4" />
-                    </Button>
-                    <span className="w-12 text-center font-medium">{quantity}</span>
-                    <Button
-                      variant="outline"
-                      size="icon"
-                      onClick={() => handleQuantityChange(1)}
-                      disabled={quantity >= (product.stockQuantity || 1)}
-                    >
-                      <Plus className="h-4 w-4" />
-                    </Button>
-                  </div>
-                </div>
-
                 {/* Stock Info */}
                 {product.inStock && product.stockQuantity && product.stockQuantity < 10 && (
                   <p className="text-sm text-orange-600">
@@ -335,16 +302,22 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
                   </p>
                 )}
 
-                {/* Add to Cart Button */}
+                {/* Contact for Inquiry Button */}
                 <Button
-                  onClick={handleAddToCart}
-                  disabled={!product.inStock}
+                  onClick={handleContactInquiry}
                   className="w-full"
                   size="lg"
                 >
                   <ShoppingCart className="mr-2 h-5 w-5" />
-                  {product.inStock ? t('products.addToCart') : t('products.outOfStock')}
+                  Contact for Inquiry
                 </Button>
+                
+                {/* Additional Info */}
+                <div className="text-sm text-muted-foreground space-y-2">
+                  <p>• This is a gallery showcase</p>
+                  <p>• Contact us for availability and pricing</p>
+                  <p>• Custom orders available</p>
+                </div>
               </div>
 
               {/* Share */}

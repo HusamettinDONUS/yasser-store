@@ -13,7 +13,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { signUpWithEmail } from '@/lib/services/auth';
+import { signIn } from 'next-auth/react';
 import { toast } from 'sonner';
 
 /**
@@ -56,9 +56,40 @@ export default function SignUpPage() {
   const onSubmit = async (data: SignUpFormData) => {
     try {
       setIsLoading(true);
-      await signUpWithEmail(data.email, data.password, data.displayName);
-      toast.success(t('auth.signUpSuccess'));
-      router.push(`/${locale}`);
+      
+      // Register user
+      const response = await fetch('/api/auth/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: data.email,
+          password: data.password,
+          name: data.displayName,
+        }),
+      });
+      
+      const result = await response.json();
+      
+      if (!response.ok) {
+        toast.error(result.error || t('auth.signUpError'));
+        return;
+      }
+      
+      // Auto sign in after successful registration
+      const signInResult = await signIn('credentials', {
+        email: data.email,
+        password: data.password,
+        redirect: false,
+      });
+      
+      if (signInResult?.error) {
+        toast.error('Account created but failed to sign in');
+      } else {
+        toast.success(t('auth.signUpSuccess'));
+        router.push(`/${locale}`);
+      }
     } catch (error: any) {
       toast.error(error.message || t('auth.signUpError'));
     } finally {

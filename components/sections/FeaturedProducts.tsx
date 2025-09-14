@@ -30,25 +30,27 @@ export function FeaturedProducts({
   const locale = useLocale();
 
   /**
+   * Fetch featured products from API
+   */
+  const fetchFeaturedProducts = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      const fetchedProducts = await getFeaturedProducts(8);
+      setProducts(fetchedProducts);
+    } catch (error) {
+      console.error('Error fetching featured products:', error);
+      setError('Failed to load featured products');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  /**
    * Fetch featured products on component mount
    */
   useEffect(() => {
-    const fetchProducts = async () => {
-      try {
-        setLoading(true);
-        setError(null);
-        const featuredProducts = await getFeaturedProducts(limit);
-        setProducts(featuredProducts);
-      } catch (error) {
-        console.error('Error fetching featured products:', error);
-        setError('Failed to load featured products');
-        toast.error(t('products.failedToLoad'));
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchProducts();
+    fetchFeaturedProducts();
   }, [limit]);
 
   if (loading) {
@@ -99,9 +101,9 @@ export function FeaturedProducts({
       <div className="container mx-auto px-4">
         {/* Section Header */}
         <div className="text-center mb-12">
-          <h2 className="text-3xl md:text-4xl font-bold mb-4">{t('products.featured')}</h2>
+          <h2 className="text-3xl md:text-4xl font-bold mb-4">Featured Gallery</h2>
           <p className="text-muted-foreground max-w-2xl mx-auto">
-            {t('products.featuredDescription')}
+            Discover our handpicked selection of premium fashion pieces, carefully curated to showcase the finest in contemporary style and design.
           </p>
         </div>
         
@@ -121,7 +123,7 @@ export function FeaturedProducts({
           <div className="text-center">
             <Button size="lg" variant="outline" asChild className="group">
               <Link href={`/${locale}/products?featured=true`}>
-                {t('products.viewAllFeatured')}
+                Explore Full Gallery
                 <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
               </Link>
             </Button>
