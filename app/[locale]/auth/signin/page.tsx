@@ -1,27 +1,33 @@
-'use client';
+"use client";
 
 // Sign in page component
-import React, { useState } from 'react';
-import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import { useTranslations, useLocale } from 'next-intl';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
-import { Eye, EyeOff, ArrowLeft } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { signIn } from 'next-auth/react';
-import { toast } from 'sonner';
+import React, { useState } from "react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useTranslations, useLocale } from "next-intl";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+import { Eye, EyeOff, ArrowLeft } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { useAuth } from "@/contexts/AuthContext";
+import { toast } from "sonner";
 
 /**
  * Sign in form schema
  */
 const signInSchema = z.object({
-  email: z.string().email('Invalid email address'),
-  password: z.string().min(6, 'Password must be at least 6 characters')
+  email: z.string().email("Invalid email address"),
+  password: z.string().min(6, "Password must be at least 6 characters"),
 });
 
 type SignInFormData = z.infer<typeof signInSchema>;
@@ -35,13 +41,14 @@ export default function SignInPage() {
   const router = useRouter();
   const t = useTranslations();
   const locale = useLocale();
+  const { login } = useAuth();
 
   const {
     register,
     handleSubmit,
-    formState: { errors }
+    formState: { errors },
   } = useForm<SignInFormData>({
-    resolver: zodResolver(signInSchema)
+    resolver: zodResolver(signInSchema),
   });
 
   /**
@@ -50,20 +57,16 @@ export default function SignInPage() {
   const onSubmit = async (data: SignInFormData) => {
     try {
       setIsLoading(true);
-      const result = await signIn('credentials', {
-        email: data.email,
-        password: data.password,
-        redirect: false,
-      });
-      
-      if (result?.error) {
-        toast.error(t('auth.signInError'));
+      const success = await login(data.email, data.password);
+
+      if (success) {
+        toast.success("Admin login successful");
+        router.push(`/${locale}/admin`);
       } else {
-        toast.success(t('auth.signInSuccess'));
-        router.push(`/${locale}`);
+        toast.error("Invalid admin credentials");
       }
-    } catch (error: any) {
-      toast.error(error.message || t('auth.signInError'));
+    } catch (error: unknown) {
+      toast.error((error as Error)?.message || "Login failed");
     } finally {
       setIsLoading(false);
     }
@@ -74,35 +77,35 @@ export default function SignInPage() {
       <div className="max-w-md w-full space-y-8">
         {/* Back to home link */}
         <div className="flex items-center">
-          <Link 
+          <Link
             href={`/${locale}`}
             className="flex items-center text-sm text-muted-foreground hover:text-primary transition-colors"
           >
             <ArrowLeft className="mr-2 h-4 w-4" />
-            {t('common.home')}
+            {t("common.home")}
           </Link>
         </div>
 
         <Card>
           <CardHeader className="space-y-1">
             <CardTitle className="text-2xl font-bold text-center">
-              {t('auth.signIn')}
+              Admin Login
             </CardTitle>
             <CardDescription className="text-center">
-              Enter your email and password to access your account
+              Enter your admin credentials to manage the store
             </CardDescription>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
               {/* Email Field */}
               <div className="space-y-2">
-                <Label htmlFor="email">{t('auth.email')}</Label>
+                <Label htmlFor="email">{t("auth.email")}</Label>
                 <Input
                   id="email"
                   type="email"
                   placeholder="Enter your email"
-                  {...register('email')}
-                  className={errors.email ? 'border-red-500' : ''}
+                  {...register("email")}
+                  className={errors.email ? "border-red-500" : ""}
                 />
                 {errors.email && (
                   <p className="text-sm text-red-500">{errors.email.message}</p>
@@ -111,14 +114,16 @@ export default function SignInPage() {
 
               {/* Password Field */}
               <div className="space-y-2">
-                <Label htmlFor="password">{t('auth.password')}</Label>
+                <Label htmlFor="password">{t("auth.password")}</Label>
                 <div className="relative">
                   <Input
                     id="password"
-                    type={showPassword ? 'text' : 'password'}
+                    type={showPassword ? "text" : "password"}
                     placeholder="Enter your password"
-                    {...register('password')}
-                    className={errors.password ? 'border-red-500 pr-10' : 'pr-10'}
+                    {...register("password")}
+                    className={
+                      errors.password ? "border-red-500 pr-10" : "pr-10"
+                    }
                   />
                   <Button
                     type="button"
@@ -135,42 +140,17 @@ export default function SignInPage() {
                   </Button>
                 </div>
                 {errors.password && (
-                  <p className="text-sm text-red-500">{errors.password.message}</p>
+                  <p className="text-sm text-red-500">
+                    {errors.password.message}
+                  </p>
                 )}
               </div>
 
-              {/* Forgot Password Link */}
-              <div className="flex justify-end">
-                <Link
-                  href={`/${locale}/auth/forgot-password`}
-                  className="text-sm text-primary hover:underline"
-                >
-                  {t('auth.forgotPassword')}
-                </Link>
-              </div>
-
               {/* Submit Button */}
-              <Button
-                type="submit"
-                className="w-full"
-                disabled={isLoading}
-              >
-                {isLoading ? t('common.loading') : t('auth.signIn')}
+              <Button type="submit" className="w-full" disabled={isLoading}>
+                {isLoading ? "Signing in..." : "Sign In as Admin"}
               </Button>
             </form>
-
-            {/* Sign Up Link */}
-            <div className="mt-6 text-center">
-              <p className="text-sm text-muted-foreground">
-                {t('auth.noAccount')}{' '}
-                <Link
-                  href={`/${locale}/auth/signup`}
-                  className="text-primary hover:underline font-medium"
-                >
-                  {t('auth.signUp')}
-                </Link>
-              </p>
-            </div>
           </CardContent>
         </Card>
       </div>

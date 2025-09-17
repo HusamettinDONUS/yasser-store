@@ -119,4 +119,56 @@
   body {
     @apply bg-background text-foreground;
   }
+
+  /* RTL Support */
+  [dir="rtl"] {
+    direction: rtl;
+  }
+
+  [dir="ltr"] {
+    direction: ltr;
+  }
+
+  /* Font definitions for TailwindCSS */
+  .font-cairo {
+    font-family: var(--font-cairo), system-ui, sans-serif;
+  }
+
+  .font-inter {
+    font-family: var(--font-inter), system-ui, sans-serif;
+  }
+
+  /* RTL specific utilities */
+  [dir="rtl"] .rtl\:text-right {
+    text-align: right;
+  }
+
+  [dir="rtl"] .rtl\:text-left {
+    text-align: left;
+  }
+
+  [dir="rtl"] .rtl\:flex-row-reverse {
+    flex-direction: row-reverse;
+  }
+
+  [dir="rtl"] .rtl\:space-x-reverse > :not([hidden]) ~ :not([hidden]) {
+    --tw-space-x-reverse: 1;
+  }
+
+  /* RTL margin and padding utilities */
+  [dir="rtl"] .rtl\:ml-auto {
+    margin-left: auto;
+  }
+
+  [dir="rtl"] .rtl\:mr-auto {
+    margin-right: auto;
+  }
+
+  [dir="rtl"] .rtl\:pl-4 {
+    padding-left: 1rem;
+  }
+
+  [dir="rtl"] .rtl\:pr-4 {
+    padding-right: 1rem;
+  }
 }

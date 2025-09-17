@@ -1,41 +1,41 @@
-'use client';
+"use client";
 
 // Products listing page component
-import React, { useEffect, useState } from 'react';
-import { useSearchParams } from 'next/navigation';
-import { useTranslations, useLocale } from 'next-intl';
-import { Loader2, Filter, Grid, List } from 'lucide-react';
-import { Header } from '@/components/layout/Header';
-import { Footer } from '@/components/layout/Footer';
-import { ProductCard } from '@/components/products/ProductCard';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
+import React, { useEffect, useState, Suspense } from "react";
+import { useSearchParams } from "next/navigation";
+import { useTranslations, useLocale } from "next-intl";
+import { Loader2, Grid, List } from "lucide-react";
+import { Header } from "@/components/layout/Header";
+import { Footer } from "@/components/layout/Footer";
+import { ProductCard } from "@/components/products/ProductCard";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
-import { Product, ProductCategory, FilterOptions } from '@/lib/types';
-import { getAllProducts, getFilteredProducts } from '@/lib/services/products';
-import { toast } from 'sonner';
+} from "@/components/ui/select";
+import { Product, ProductCategory, FilterOptions } from "@/lib/types";
+import { getAllProducts, getFilteredProducts } from "@/lib/services/products";
+import { toast } from "sonner";
 
 /**
- * Products listing page component
+ * Products listing page component (inner component)
  */
-export default function ProductsPage() {
+function ProductsPageContent() {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
-  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
-  const [sortBy, setSortBy] = useState<string>('newest');
+  const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
+  const [sortBy, setSortBy] = useState<string>("newest");
   const searchParams = useSearchParams();
   const t = useTranslations();
   const locale = useLocale();
 
   // Get filter parameters from URL
-  const category = searchParams.get('category') as ProductCategory | null;
-  const featured = searchParams.get('featured') === 'true';
+  const category = searchParams.get("category") as ProductCategory | null;
+  const featured = searchParams.get("featured") === "true";
 
   /**
    * Fetch products based on filters
@@ -43,24 +43,24 @@ export default function ProductsPage() {
   const fetchProducts = async () => {
     try {
       setLoading(true);
-      
+
       const filters: FilterOptions = {};
       if (category) filters.category = category;
       if (featured) filters.featured = true;
-      
+
       let fetchedProducts: Product[];
       if (Object.keys(filters).length > 0) {
         fetchedProducts = await getFilteredProducts(filters);
       } else {
         fetchedProducts = await getAllProducts();
       }
-      
+
       // Apply sorting
       const sortedProducts = sortProducts(fetchedProducts, sortBy);
       setProducts(sortedProducts);
     } catch (error) {
-      console.error('Error fetching products:', error);
-      toast.error(t('products.failedToLoad'));
+      console.error("Error fetching products:", error);
+      toast.error(t("products.failedToLoad"));
     } finally {
       setLoading(false);
     }
@@ -71,19 +71,25 @@ export default function ProductsPage() {
    */
   const sortProducts = (products: Product[], sortBy: string): Product[] => {
     const sorted = [...products];
-    
+
     switch (sortBy) {
-      case 'newest':
-        return sorted.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
-      case 'oldest':
-        return sorted.sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
-      case 'price-low':
+      case "newest":
+        return sorted.sort(
+          (a, b) =>
+            new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+        );
+      case "oldest":
+        return sorted.sort(
+          (a, b) =>
+            new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+        );
+      case "price-low":
         return sorted.sort((a, b) => a.price - b.price);
-      case 'price-high':
+      case "price-high":
         return sorted.sort((a, b) => b.price - a.price);
-      case 'name-az':
+      case "name-az":
         return sorted.sort((a, b) => a.name.localeCompare(b.name));
-      case 'name-za':
+      case "name-za":
         return sorted.sort((a, b) => b.name.localeCompare(a.name));
       default:
         return sorted;
@@ -103,52 +109,53 @@ export default function ProductsPage() {
    * Get page title based on filters
    */
   const getPageTitle = () => {
-    if (featured) return t('navigation.featured');
+    if (featured) return t("navigation.featured");
     if (category) {
       switch (category) {
         case ProductCategory.SHIRTS:
-          return t('categories.shirts.name');
+          return t("categories.shirts.name");
         case ProductCategory.PANTS:
-          return t('categories.pants.name');
+          return t("categories.pants.name");
         case ProductCategory.DRESSES:
-          return t('categories.dresses.name');
+          return t("categories.dresses.name");
         case ProductCategory.JACKETS:
-          return t('categories.jackets.name');
+          return t("categories.jackets.name");
         case ProductCategory.SHOES:
-          return t('categories.shoes.name');
+          return t("categories.shoes.name");
         case ProductCategory.ACCESSORIES:
-          return t('categories.accessories.name');
+          return t("categories.accessories.name");
         default:
-          return t('navigation.allProducts');
+          return t("navigation.allProducts");
       }
     }
-    return t('navigation.allProducts');
+    return t("navigation.allProducts");
   };
 
   /**
    * Get page description based on filters
    */
   const getPageDescription = () => {
-    if (featured) return 'Discover our handpicked selection of premium clothing items';
+    if (featured)
+      return "Discover our handpicked selection of premium clothing items";
     if (category) {
       switch (category) {
         case ProductCategory.SHIRTS:
-          return t('categories.shirts.description');
+          return t("categories.shirts.description");
         case ProductCategory.PANTS:
-          return t('categories.pants.description');
+          return t("categories.pants.description");
         case ProductCategory.DRESSES:
-          return t('categories.dresses.description');
+          return t("categories.dresses.description");
         case ProductCategory.JACKETS:
-          return t('categories.jackets.description');
+          return t("categories.jackets.description");
         case ProductCategory.SHOES:
-          return t('categories.shoes.description');
+          return t("categories.shoes.description");
         case ProductCategory.ACCESSORIES:
-          return t('categories.accessories.description');
+          return t("categories.accessories.description");
         default:
-          return 'Browse our complete collection of premium clothing';
+          return "Browse our complete collection of premium clothing";
       }
     }
-    return 'Browse our complete collection of premium clothing';
+    return "Browse our complete collection of premium clothing";
   };
 
   // Fetch products on component mount and when filters change
@@ -159,7 +166,7 @@ export default function ProductsPage() {
   return (
     <div className="min-h-screen flex flex-col">
       <Header />
-      
+
       <main className="flex-1">
         {/* Page Header */}
         <div className="bg-gray-50 dark:bg-gray-900 py-12">
@@ -171,19 +178,17 @@ export default function ProductsPage() {
               <p className="text-muted-foreground max-w-2xl mx-auto">
                 {getPageDescription()}
               </p>
-              
+
               {/* Active Filters */}
               {(category || featured) && (
                 <div className="flex flex-wrap justify-center gap-2 mt-6">
                   {featured && (
                     <Badge variant="secondary">
-                      {t('navigation.featured')}
+                      {t("navigation.featured")}
                     </Badge>
                   )}
                   {category && (
-                    <Badge variant="secondary">
-                      {getPageTitle()}
-                    </Badge>
+                    <Badge variant="secondary">{getPageTitle()}</Badge>
                   )}
                 </div>
               )}
@@ -197,11 +202,11 @@ export default function ProductsPage() {
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
             {/* Results Count */}
             <div className="text-sm text-muted-foreground">
-              {loading ? (
-                t('common.loading')
-              ) : (
-                `${products.length} ${products.length === 1 ? 'product' : 'products'} found`
-              )}
+              {loading
+                ? t("common.loading")
+                : `${products.length} ${
+                    products.length === 1 ? "product" : "products"
+                  } found`}
             </div>
 
             {/* Controls */}
@@ -224,17 +229,17 @@ export default function ProductsPage() {
               {/* View Mode Toggle */}
               <div className="flex border rounded-md">
                 <Button
-                  variant={viewMode === 'grid' ? 'default' : 'ghost'}
+                  variant={viewMode === "grid" ? "default" : "ghost"}
                   size="sm"
-                  onClick={() => setViewMode('grid')}
+                  onClick={() => setViewMode("grid")}
                   className="rounded-r-none"
                 >
                   <Grid className="h-4 w-4" />
                 </Button>
                 <Button
-                  variant={viewMode === 'list' ? 'default' : 'ghost'}
+                  variant={viewMode === "list" ? "default" : "ghost"}
                   size="sm"
-                  onClick={() => setViewMode('list')}
+                  onClick={() => setViewMode("list")}
                   className="rounded-l-none"
                 >
                   <List className="h-4 w-4" />
@@ -251,31 +256,50 @@ export default function ProductsPage() {
           ) : products.length === 0 ? (
             <div className="text-center py-12">
               <p className="text-muted-foreground mb-4">
-                {t('products.noProducts')}
+                {t("products.noProducts")}
               </p>
               <Button asChild>
                 <a href={`/${locale}`}>Back to Home</a>
               </Button>
             </div>
           ) : (
-            <div className={`grid gap-6 ${
-              viewMode === 'grid' 
-                ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'
-                : 'grid-cols-1'
-            }`}>
+            <div
+              className={`grid gap-6 ${
+                viewMode === "grid"
+                  ? "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
+                  : "grid-cols-1"
+              }`}
+            >
               {products.map((product) => (
-                <ProductCard 
-                  key={product.id} 
+                <ProductCard
+                  key={product.id}
                   product={product}
-                  className={viewMode === 'list' ? 'flex-row' : ''}
+                  className={viewMode === "list" ? "flex-row" : ""}
                 />
               ))}
             </div>
           )}
         </div>
       </main>
-      
+
       <Footer />
     </div>
+  );
+}
+
+/**
+ * Main Products page component with Suspense boundary
+ */
+export default function ProductsPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-screen flex items-center justify-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+        </div>
+      }
+    >
+      <ProductsPageContent />
+    </Suspense>
   );
 }

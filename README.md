@@ -1,25 +1,26 @@
-# Yasser Store - E-commerce Platform
+# Yasser Store - Showcase Website
 
-Modern, tam özellikli e-ticaret uygulaması. Next.js, TypeScript, Prisma ve NextAuth ile geliştirilmiş.
+Modern ve şık ürün vitrin web sitesi. Toptancılar için basit ve etkili ürün sergilemesi. Next.js, TypeScript ve Prisma ile geliştirilmiş.
 
 ## 🚀 Özellikler
 
-- 🛍️ **Tam E-ticaret Sistemi**: Ürün katalogu, sepet, sipariş yönetimi
-- 🔐 **Güvenli Authentication**: NextAuth ile kullanıcı giriş/kayıt
-- 👨‍💼 **Admin Paneli**: Ürün ve sipariş yönetimi
+- 🏪 **Ürün Vitrin Sistemi**: Güzel ve modern ürün sergilemesi
+- 🔐 **Admin Paneli**: Basit admin girişi ile ürün yönetimi (CRUD)
+- 👨‍💼 **Sadece Admin Auth**: Basit admin authentication sistemi
 - 🌐 **Çoklu Dil**: Türkçe, Arapça, İngilizce desteği
 - 📱 **Responsive Design**: Tüm cihazlarda mükemmel görünüm
 - 🎨 **Modern UI**: Shadcn/ui + TailwindCSS
+- 🚫 **No E-commerce**: Sepet, ödeme, sipariş yok - sadece vitrin
 
 ## 🛠️ Teknoloji Stack
 
 - **Framework**: Next.js 15 (App Router)
 - **Language**: TypeScript
-- **Database**: PostgreSQL + Prisma ORM
-- **Auth**: NextAuth.js
+- **Database**: SQLite (dev) / PostgreSQL (prod) + Prisma ORM
+- **Auth**: Simple session-based authentication (admin only)
 - **Styling**: TailwindCSS + Shadcn/ui
 - **Forms**: React Hook Form + Zod
-- **Deployment**: Vercel + Vercel Postgres
+- **Deployment**: Vercel + Vercel Postgres/Blob
 
 ## 📦 Kurulum
 
@@ -44,11 +45,7 @@ npm install
 # Database (Development için SQLite, Production için PostgreSQL)
 DATABASE_URL="file:./dev.db"
 
-# NextAuth
-NEXTAUTH_URL="http://localhost:3000"
-NEXTAUTH_SECRET="your-secret-key"
-
-# Admin
+# Admin (ilk kayıt olan bu email admin olur)
 ADMIN_EMAIL="admin@example.com"
 ```
 
@@ -78,8 +75,6 @@ npm run dev
 ```bash
 DATABASE_URL="your-vercel-postgres-url"
 DIRECT_URL="your-vercel-postgres-direct-url"
-NEXTAUTH_URL="https://your-domain.vercel.app"
-NEXTAUTH_SECRET="secure-random-string"
 ADMIN_EMAIL="your-admin-email"
 ```
 
@@ -102,9 +97,16 @@ vercel --prod         # Deploy to production
 ## 🔑 Admin Kurulumu
 
 1. Uygulamayı deploy edin
-2. `ADMIN_EMAIL` ile kayıt olun
+2. `ADMIN_EMAIL` ile `/api/auth/register` endpoint'ine kayıt olun veya script kullanın
 3. Otomatik admin yetkisi alacaksınız
-4. Admin paneline `/admin` üzerinden erişin
+4. `/auth/signin` üzerinden giriş yapın
+5. Admin paneline `/admin` üzerinden erişin
+
+### Admin Oluşturma Script'i
+
+```bash
+node scripts/create-admin.js
+```
 
 ## 📖 Detaylı Deployment Guide
 

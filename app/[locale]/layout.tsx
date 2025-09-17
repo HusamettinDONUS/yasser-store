@@ -1,9 +1,8 @@
 import type { Metadata } from "next";
 import { getMessages } from "next-intl/server";
-import { Inter, Montserrat } from "next/font/google";
+import { Inter, Montserrat, Cairo } from "next/font/google";
 import { notFound } from "next/navigation";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
+// Auth imports removed - using simple session-based auth
 import { locales } from "@/i18n/request";
 import "../globals.css";
 import ClientLayoutWrapper from "./ClientLayoutWrapper";
@@ -12,6 +11,10 @@ const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 const montserrat = Montserrat({
   subsets: ["latin"],
   variable: "--font-montserrat",
+});
+const cairo = Cairo({
+  subsets: ["arabic", "latin"],
+  variable: "--font-cairo",
 });
 
 export const metadata: Metadata = {
@@ -36,28 +39,23 @@ export default async function RootLayout({
 
   if (!locales.includes(locale as (typeof locales)[number])) notFound();
 
-  let messages: Record<string, any> = {};
-  let session = null;
+  let messages: Record<string, unknown> = {};
 
   try {
-    [messages, session] = await Promise.all([
-      getMessages({ locale }).catch(() => ({})),
-      getServerSession(authOptions).catch(() => null),
-    ]);
+    messages = await getMessages({ locale }).catch(() => ({}));
   } catch (error) {
-    console.warn("Failed to load session or messages:", error);
+    console.warn("Failed to load messages:", error);
     messages = {};
-    session = null;
   }
 
   return (
-    <html lang={locale} dir="ltr">
-      <body className={`${inter.variable} ${montserrat.variable} antialiased`}>
-        <ClientLayoutWrapper
-          session={session}
-          messages={messages}
-          locale={locale}
-        >
+    <html lang={locale} dir={locale === "ar" ? "rtl" : "ltr"}>
+      <body
+        className={`${inter.variable} ${montserrat.variable} ${
+          cairo.variable
+        } antialiased ${locale === "ar" ? "font-cairo" : "font-inter"}`}
+      >
+        <ClientLayoutWrapper messages={messages} locale={locale}>
           {children}
         </ClientLayoutWrapper>
       </body>

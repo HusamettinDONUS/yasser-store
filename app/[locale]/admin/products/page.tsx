@@ -77,7 +77,7 @@ export default function AdminProductsPage() {
       setFilteredProducts(fetchedProducts);
     } catch (error) {
       console.error("Error fetching products:", error);
-      toast.error("Failed to load products");
+      toast.error(t("products.failedToLoad"));
     } finally {
       setLoading(false);
     }
@@ -120,7 +120,7 @@ export default function AdminProductsPage() {
     try {
       setDeleting(true);
       await deleteProduct(productToDelete.id);
-      toast.success("Product deleted successfully");
+      toast.success(t("admin.productDeleted"));
 
       // Remove from local state
       const updatedProducts = products.filter(
@@ -133,7 +133,7 @@ export default function AdminProductsPage() {
       setProductToDelete(null);
     } catch (error) {
       console.error("Error deleting product:", error);
-      toast.error("Failed to delete product");
+      toast.error(t("common.error"));
     } finally {
       setDeleting(false);
     }
@@ -154,16 +154,22 @@ export default function AdminProductsPage() {
    */
   const getStockBadge = (product: Product) => {
     if (!product.inStock) {
-      return <Badge variant="destructive">Out of Stock</Badge>;
+      return <Badge variant="destructive">{t("admin.outOfStock")}</Badge>;
     }
 
     if (product.stockQuantity && product.stockQuantity < 10) {
       return (
-        <Badge variant="secondary">Low Stock ({product.stockQuantity})</Badge>
+        <Badge variant="secondary">
+          {t("admin.lowStock", { count: product.stockQuantity })}
+        </Badge>
       );
     }
 
-    return <Badge variant="default">In Stock ({product.stockQuantity})</Badge>;
+    return (
+      <Badge variant="default">
+        {t("admin.inStockCount", { count: product.stockQuantity })}
+      </Badge>
+    );
   };
 
   useEffect(() => {
@@ -177,7 +183,7 @@ export default function AdminProductsPage() {
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-3xl font-bold">{t("admin.products")}</h1>
-            <p className="text-muted-foreground">Manage your store products</p>
+            <p className="text-muted-foreground">{t("admin.manageProducts")}</p>
           </div>
           <Button asChild>
             <Link href={`/${locale}/admin/products/new`}>
@@ -188,11 +194,11 @@ export default function AdminProductsPage() {
         </div>
 
         {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">
-                Total Products
+                {t("admin.totalProducts")}
               </CardTitle>
               <Package className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
@@ -203,7 +209,9 @@ export default function AdminProductsPage() {
 
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">In Stock</CardTitle>
+              <CardTitle className="text-sm font-medium">
+                {t("admin.inStock")}
+              </CardTitle>
               <Package className="h-4 w-4 text-green-600" />
             </CardHeader>
             <CardContent>
@@ -216,7 +224,7 @@ export default function AdminProductsPage() {
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">
-                Out of Stock
+                {t("admin.outOfStock")}
               </CardTitle>
               <Package className="h-4 w-4 text-red-600" />
             </CardHeader>
@@ -229,7 +237,9 @@ export default function AdminProductsPage() {
 
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Featured</CardTitle>
+              <CardTitle className="text-sm font-medium">
+                {t("admin.featured")}
+              </CardTitle>
               <Package className="h-4 w-4 text-blue-600" />
             </CardHeader>
             <CardContent>
@@ -241,11 +251,11 @@ export default function AdminProductsPage() {
         </div>
 
         {/* Search and Filters */}
-        <div className="flex items-center space-x-4">
-          <div className="relative flex-1 max-w-sm">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
+          <div className="relative flex-1 w-full sm:max-w-sm">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
             <Input
-              placeholder="Search products..."
+              placeholder={t("admin.searchProducts")}
               value={searchTerm}
               onChange={handleSearchChange}
               className="pl-10"
@@ -253,115 +263,144 @@ export default function AdminProductsPage() {
           </div>
           <Button variant="outline">
             <Filter className="mr-2 h-4 w-4" />
-            Filter
+            {t("admin.filter")}
           </Button>
         </div>
 
         {/* Products Table */}
         <Card>
           <CardHeader>
-            <CardTitle>Products ({filteredProducts.length})</CardTitle>
-            <CardDescription>Manage your product inventory</CardDescription>
+            <CardTitle>
+              {t("admin.productsCount", { count: filteredProducts.length })}
+            </CardTitle>
+            <CardDescription>{t("admin.manageInventory")}</CardDescription>
           </CardHeader>
           <CardContent>
             {loading ? (
-              <div className="flex items-center justify-center py-8">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+              <div className="flex items-center justify-center py-16">
+                <div className="flex flex-col items-center space-y-4">
+                  <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+                  <p className="text-muted-foreground">{t("common.loading")}</p>
+                </div>
               </div>
             ) : filteredProducts.length === 0 ? (
-              <div className="text-center py-8 text-muted-foreground">
-                {searchTerm
-                  ? "No products found matching your search."
-                  : "No products found."}
+              <div className="flex flex-col items-center justify-center py-16 text-center">
+                <Package className="h-16 w-16 text-muted-foreground/50 mb-4" />
+                <h3 className="font-semibold text-lg mb-2">
+                  {searchTerm
+                    ? t("admin.noProductsSearch")
+                    : t("admin.noProductsFound")}
+                </h3>
+                <p className="text-muted-foreground mb-6">
+                  {searchTerm
+                    ? t("admin.tryAdjustSearch")
+                    : t("admin.getStartedAddProduct")}
+                </p>
+                {!searchTerm && (
+                  <Button asChild>
+                    <Link href={`/${locale}/admin/products/new`}>
+                      <Plus className="mr-2 h-4 w-4" />
+                      {t("admin.addProduct")}
+                    </Link>
+                  </Button>
+                )}
               </div>
             ) : (
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Product</TableHead>
-                    <TableHead>Category</TableHead>
-                    <TableHead>Price</TableHead>
-                    <TableHead>Stock</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead className="text-right">Actions</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {filteredProducts.map((product) => (
-                    <TableRow key={product.id}>
-                      <TableCell>
-                        <div className="flex items-center space-x-3">
-                          <div className="w-10 h-10 bg-gray-100 rounded-md flex items-center justify-center">
-                            {product.images && product.images.length > 0 ? (
-                              <img
-                                src={product.images[0]}
-                                alt={product.name}
-                                className="w-full h-full object-cover rounded-md"
-                              />
-                            ) : (
-                              <Package className="h-5 w-5 text-gray-400" />
-                            )}
-                          </div>
-                          <div>
-                            <div className="font-medium">{product.name}</div>
-                            <div className="text-sm text-muted-foreground truncate max-w-xs">
-                              {product.description}
+              <div className="overflow-x-auto">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>{t("admin.product")}</TableHead>
+                      <TableHead>{t("admin.category")}</TableHead>
+                      <TableHead>{t("products.price")}</TableHead>
+                      <TableHead>{t("admin.stock")}</TableHead>
+                      <TableHead>{t("admin.status")}</TableHead>
+                      <TableHead className="text-right">
+                        {t("admin.actions")}
+                      </TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {filteredProducts.map((product) => (
+                      <TableRow key={product.id}>
+                        <TableCell>
+                          <div className="flex items-center space-x-3">
+                            <div className="w-10 h-10 bg-gray-100 rounded-md flex items-center justify-center">
+                              {product.images && product.images.length > 0 ? (
+                                <img
+                                  src={product.images[0]}
+                                  alt={product.name}
+                                  className="w-full h-full object-cover rounded-md"
+                                />
+                              ) : (
+                                <Package className="h-5 w-5 text-gray-400" />
+                              )}
+                            </div>
+                            <div>
+                              <div className="font-medium">{product.name}</div>
+                              <div className="text-sm text-muted-foreground truncate max-w-xs">
+                                {product.description}
+                              </div>
                             </div>
                           </div>
-                        </div>
-                      </TableCell>
-                      <TableCell>
-                        <Badge variant="outline">{product.category}</Badge>
-                      </TableCell>
-                      <TableCell>{formatPrice(product.price)}</TableCell>
-                      <TableCell>{getStockBadge(product)}</TableCell>
-                      <TableCell>
-                        <div className="flex items-center space-x-2">
-                          {product.featured && (
-                            <Badge variant="secondary">Featured</Badge>
-                          )}
-                        </div>
-                      </TableCell>
-                      <TableCell className="text-right">
-                        <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" size="icon">
-                              <MoreHorizontal className="h-4 w-4" />
-                            </Button>
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end">
-                            <DropdownMenuItem asChild>
-                              <Link href={`/${locale}/products/${product.id}`}>
-                                <Eye className="mr-2 h-4 w-4" />
-                                View
-                              </Link>
-                            </DropdownMenuItem>
-                            <DropdownMenuItem asChild>
-                              <Link
-                                href={`/${locale}/admin/products/${product.id}/edit`}
+                        </TableCell>
+                        <TableCell>
+                          <Badge variant="outline">{product.category}</Badge>
+                        </TableCell>
+                        <TableCell>{formatPrice(product.price)}</TableCell>
+                        <TableCell>{getStockBadge(product)}</TableCell>
+                        <TableCell>
+                          <div className="flex items-center space-x-2">
+                            {product.featured && (
+                              <Badge variant="secondary">
+                                {t("admin.featured")}
+                              </Badge>
+                            )}
+                          </div>
+                        </TableCell>
+                        <TableCell className="text-right">
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <Button variant="ghost" size="icon">
+                                <MoreHorizontal className="h-4 w-4" />
+                              </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end">
+                              <DropdownMenuItem asChild>
+                                <Link
+                                  href={`/${locale}/products/${product.id}`}
+                                >
+                                  <Eye className="mr-2 h-4 w-4" />
+                                  {t("common.view")}
+                                </Link>
+                              </DropdownMenuItem>
+                              <DropdownMenuItem asChild>
+                                <Link
+                                  href={`/${locale}/admin/products/${product.id}/edit`}
+                                >
+                                  <Edit className="mr-2 h-4 w-4" />
+                                  {t("common.edit")}
+                                </Link>
+                              </DropdownMenuItem>
+                              <DropdownMenuSeparator />
+                              <DropdownMenuItem
+                                onClick={() => {
+                                  setProductToDelete(product);
+                                  setDeleteDialogOpen(true);
+                                }}
+                                className="text-red-600"
                               >
-                                <Edit className="mr-2 h-4 w-4" />
-                                Edit
-                              </Link>
-                            </DropdownMenuItem>
-                            <DropdownMenuSeparator />
-                            <DropdownMenuItem
-                              onClick={() => {
-                                setProductToDelete(product);
-                                setDeleteDialogOpen(true);
-                              }}
-                              className="text-red-600"
-                            >
-                              <Trash2 className="mr-2 h-4 w-4" />
-                              Delete
-                            </DropdownMenuItem>
-                          </DropdownMenuContent>
-                        </DropdownMenu>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
+                                <Trash2 className="mr-2 h-4 w-4" />
+                                {t("common.delete")}
+                              </DropdownMenuItem>
+                            </DropdownMenuContent>
+                          </DropdownMenu>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
             )}
           </CardContent>
         </Card>
@@ -370,10 +409,11 @@ export default function AdminProductsPage() {
         <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
           <DialogContent>
             <DialogHeader>
-              <DialogTitle>Delete Product</DialogTitle>
+              <DialogTitle>{t("admin.confirmDeleteTitle")}</DialogTitle>
               <DialogDescription>
-                Are you sure you want to delete "{productToDelete?.name}"? This
-                action cannot be undone.
+                {t("admin.confirmDeleteMessage", {
+                  name: productToDelete?.name ?? "",
+                })}
               </DialogDescription>
             </DialogHeader>
             <DialogFooter>
@@ -382,14 +422,14 @@ export default function AdminProductsPage() {
                 onClick={() => setDeleteDialogOpen(false)}
                 disabled={deleting}
               >
-                Cancel
+                {t("common.cancel")}
               </Button>
               <Button
                 variant="destructive"
                 onClick={handleDeleteProduct}
                 disabled={deleting}
               >
-                {deleting ? "Deleting..." : "Delete"}
+                {deleting ? t("admin.deleting") : t("common.delete")}
               </Button>
             </DialogFooter>
           </DialogContent>

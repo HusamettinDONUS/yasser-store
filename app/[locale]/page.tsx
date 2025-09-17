@@ -17,7 +17,7 @@ export function generateStaticParams() {
  * Homepage component with internationalization support
  */
 export default async function Home({ params }: HomeProps) {
-  const { locale } = await params;
+  await params; // Use params to avoid warning
   return (
     <div className="min-h-screen flex flex-col">
       <Header />

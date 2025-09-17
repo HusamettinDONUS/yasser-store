@@ -1,12 +1,10 @@
 "use client";
 
 // Admin dashboard page component
-import React, { useEffect, useState } from "react";
-import { useTranslations, useLocale } from "next-intl";
+import React, { useEffect, useState, useCallback } from "react";
+import { useLocale, useTranslations } from "next-intl";
 import {
   Package,
-  ShoppingCart,
-  Users,
   DollarSign,
   TrendingUp,
   TrendingDown,
@@ -34,23 +32,23 @@ export default function AdminDashboardPage() {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const locale = useLocale();
-  // const t = useTranslations();
+  const t = useTranslations();
 
   /**
    * Fetch dashboard data
    */
-  const fetchDashboardData = async () => {
+  const fetchDashboardData = useCallback(async () => {
     try {
       setLoading(true);
       const fetchedProducts = await getAllProducts();
       setProducts(fetchedProducts);
     } catch (error) {
       console.error("Error fetching dashboard data:", error);
-      toast.error("Failed to load dashboard data");
+      toast.error(t("admin.loadingError"));
     } finally {
       setLoading(false);
     }
-  };
+  }, [t]);
 
   /**
    * Calculate dashboard statistics
@@ -95,7 +93,7 @@ export default function AdminDashboardPage() {
    * Format currency
    */
   const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat("en-US", {
+    return new Intl.NumberFormat(locale === "ar" ? "ar-SA" : "en-US", {
       style: "currency",
       currency: "USD",
     }).format(amount);
@@ -103,7 +101,7 @@ export default function AdminDashboardPage() {
 
   useEffect(() => {
     fetchDashboardData();
-  }, []);
+  }, [fetchDashboardData]);
 
   const stats = getStatistics();
   const recentProducts = getRecentProducts();
@@ -112,35 +110,35 @@ export default function AdminDashboardPage() {
     <AdminLayout>
       <div className="space-y-6">
         {/* Page Header */}
-        <div>
-          {/* <h1 className="text-3xl font-bold">{t("admin.dashboard")}</h1> */}
-          <p className="text-muted-foreground">
-            Welcome to your store management dashboard
-          </p>
+        <div className="space-y-2">
+          <h1 className="text-3xl font-bold">{t("admin.dashboard")}</h1>
+          <p className="text-muted-foreground">{t("admin.welcomeMessage")}</p>
         </div>
 
         {/* Statistics Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {/* Total Products */}
           <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 rtl:flex-row-reverse">
               <CardTitle className="text-sm font-medium">
-                Total Products
+                {t("admin.totalProducts")}
               </CardTitle>
               <Package className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">{stats.totalProducts}</div>
               <p className="text-xs text-muted-foreground">
-                {stats.featuredProducts} featured
+                {stats.featuredProducts} {t("admin.featured")}
               </p>
             </CardContent>
           </Card>
 
           {/* In Stock */}
           <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">In Stock</CardTitle>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 rtl:flex-row-reverse">
+              <CardTitle className="text-sm font-medium">
+                {t("admin.inStock")}
+              </CardTitle>
               <TrendingUp className="h-4 w-4 text-green-600" />
             </CardHeader>
             <CardContent>
@@ -148,16 +146,16 @@ export default function AdminDashboardPage() {
                 {stats.inStockProducts}
               </div>
               <p className="text-xs text-muted-foreground">
-                {stats.outOfStockProducts} out of stock
+                {stats.outOfStockProducts} {t("admin.outOfStock")}
               </p>
             </CardContent>
           </Card>
 
           {/* Total Value */}
           <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 rtl:flex-row-reverse">
               <CardTitle className="text-sm font-medium">
-                Inventory Value
+                {t("admin.inventoryValue")}
               </CardTitle>
               <DollarSign className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
@@ -166,20 +164,8 @@ export default function AdminDashboardPage() {
                 {formatCurrency(stats.totalValue)}
               </div>
               <p className="text-xs text-muted-foreground">
-                Avg: {formatCurrency(stats.averagePrice)}
+                {t("admin.average")}: {formatCurrency(stats.averagePrice)}
               </p>
-            </CardContent>
-          </Card>
-
-          {/* Orders (Placeholder) */}
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Orders</CardTitle>
-              <ShoppingCart className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">0</div>
-              <p className="text-xs text-muted-foreground">No orders yet</p>
             </CardContent>
           </Card>
         </div>
@@ -188,10 +174,8 @@ export default function AdminDashboardPage() {
           {/* Recent Products */}
           <Card>
             <CardHeader>
-              <CardTitle>Recent Products</CardTitle>
-              <CardDescription>
-                Latest products added to your store
-              </CardDescription>
+              <CardTitle>{t("admin.recentProducts")}</CardTitle>
+              <CardDescription>{t("admin.latestProductsDesc")}</CardDescription>
             </CardHeader>
             <CardContent>
               {loading ? (
@@ -200,30 +184,30 @@ export default function AdminDashboardPage() {
                 </div>
               ) : recentProducts.length === 0 ? (
                 <div className="text-center py-8 text-muted-foreground">
-                  No products found
+                  {t("admin.noProductsFound")}
                 </div>
               ) : (
                 <div className="space-y-4">
                   {recentProducts.map((product) => (
                     <div
                       key={product.id}
-                      className="flex items-center justify-between p-3 border rounded-lg"
+                      className="flex items-center justify-between p-3 border rounded-lg rtl:flex-row-reverse"
                     >
-                      <div className="flex-1">
+                      <div className="flex-1 rtl:text-right">
                         <h4 className="font-medium">{product.name}</h4>
                         <p className="text-sm text-muted-foreground">
                           {formatCurrency(product.price)} • {product.category}
                         </p>
                       </div>
-                      <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-2 rtl:flex-row-reverse">
                         {product.featured && (
                           <Badge variant="secondary" className="text-xs">
-                            Featured
+                            {t("admin.featured")}
                           </Badge>
                         )}
                         {!product.inStock && (
                           <Badge variant="destructive" className="text-xs">
-                            Out of Stock
+                            {t("admin.outOfStock")}
                           </Badge>
                         )}
                         <Button variant="ghost" size="sm">
@@ -240,33 +224,28 @@ export default function AdminDashboardPage() {
           {/* Quick Actions */}
           <Card>
             <CardHeader>
-              <CardTitle>Quick Actions</CardTitle>
-              <CardDescription>Common tasks and shortcuts</CardDescription>
+              <CardTitle>{t("admin.quickActions")}</CardTitle>
+              <CardDescription>{t("admin.commonTasks")}</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-1 gap-3">
-                <Button className="justify-start" asChild>
+                <Button
+                  className="justify-start rtl:justify-end rtl:flex-row-reverse"
+                  asChild
+                >
                   <Link href={`/${locale}/admin/products/new`}>
-                    <Package className="mr-2 h-4 w-4" />
-                    Add New Product
+                    <Package className="mr-2 rtl:mr-0 rtl:ml-2 h-4 w-4" />
+                    {t("admin.addNewProduct")}
                   </Link>
                 </Button>
-                <Button variant="outline" className="justify-start" asChild>
+                <Button
+                  variant="outline"
+                  className="justify-start rtl:justify-end rtl:flex-row-reverse"
+                  asChild
+                >
                   <Link href={`/${locale}/admin/products`}>
-                    <Eye className="mr-2 h-4 w-4" />
-                    View All Products
-                  </Link>
-                </Button>
-                <Button variant="outline" className="justify-start" asChild>
-                  <Link href={`/${locale}/admin/orders`}>
-                    <ShoppingCart className="mr-2 h-4 w-4" />
-                    Manage Orders
-                  </Link>
-                </Button>
-                <Button variant="outline" className="justify-start" asChild>
-                  <Link href={`/${locale}/admin/customers`}>
-                    <Users className="mr-2 h-4 w-4" />
-                    View Customers
+                    <Eye className="mr-2 rtl:mr-0 rtl:ml-2 h-4 w-4" />
+                    {t("admin.viewAllProducts")}
                   </Link>
                 </Button>
               </div>
@@ -278,11 +257,13 @@ export default function AdminDashboardPage() {
         {!loading && (
           <Card>
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
+              <CardTitle className="flex items-center gap-2 rtl:flex-row-reverse">
                 <TrendingDown className="h-5 w-5 text-orange-500" />
-                Low Stock Alert
+                {t("admin.lowStockAlert")}
               </CardTitle>
-              <CardDescription>Products that need restocking</CardDescription>
+              <CardDescription>
+                {t("admin.productsNeedRestock")}
+              </CardDescription>
             </CardHeader>
             <CardContent>
               {(() => {
@@ -293,7 +274,7 @@ export default function AdminDashboardPage() {
                 if (lowStockProducts.length === 0) {
                   return (
                     <p className="text-muted-foreground">
-                      All products are well stocked!
+                      {t("admin.allProductsWellStocked")}
                     </p>
                   );
                 }
@@ -303,11 +284,11 @@ export default function AdminDashboardPage() {
                     {lowStockProducts.map((product) => (
                       <div
                         key={product.id}
-                        className="flex items-center justify-between p-2 bg-orange-50 dark:bg-orange-950 rounded"
+                        className="flex items-center justify-between p-2 bg-orange-50 dark:bg-orange-950 rounded rtl:flex-row-reverse"
                       >
                         <span className="font-medium">{product.name}</span>
                         <Badge variant="outline" className="text-orange-600">
-                          {product.stockQuantity} left
+                          {product.stockQuantity} {t("admin.leftInStock")}
                         </Badge>
                       </div>
                     ))}

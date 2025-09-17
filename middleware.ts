@@ -5,8 +5,8 @@ export default createMiddleware({
   locales: ["en", "ar"],
 
   // Used when no locale matches
-  defaultLocale: "en",
-  
+  defaultLocale: "ar",
+
   // Always redirect to default locale
   localePrefix: "always",
 });

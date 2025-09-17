@@ -85,8 +85,8 @@ function DefaultErrorFallback({
             </button>
           </div>
           <p className="text-sm text-gray-500 mt-4">
-            Sorun devam ederse, browser cache'ini temizleyin veya geliştirici
-            konsolu için F12'ye basın.
+            Sorun devam ederse, browser cache&apos;ini temizleyin veya
+            geliştirici konsolu için F12&apos;ye basın.
           </p>
         </div>
       </div>

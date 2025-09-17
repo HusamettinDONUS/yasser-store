@@ -1,34 +1,26 @@
-'use client';
+"use client";
 
 // Header navigation component for the storefront
-import React, { useState } from 'react';
-import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import { useTranslations, useLocale } from 'next-intl';
-import { ShoppingBag, Menu, X, User, LogOut } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import React, { useState } from "react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useTranslations, useLocale } from "next-intl";
+import { ShoppingBag, Menu, X, User, LogOut } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import { Badge } from '@/components/ui/badge';
-import { LanguageSwitcher } from '@/components/ui/language-switcher';
-import { useAuth } from '@/contexts/AuthContext';
-import { signOut } from 'next-auth/react';
-import { ProductCategory } from '@/lib/types';
-import { toast } from 'sonner';
-
-interface HeaderProps {
-  // Gallery-focused header - no cart functionality
-}
+} from "@/components/ui/dropdown-menu";
+import { LanguageSwitcher } from "@/components/ui/language-switcher";
+import { useAuth } from "@/contexts/AuthContext";
 
 /**
  * Main header navigation component
  */
-export function Header({}: HeaderProps) {
+export function Header() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { user, isAdmin } = useAuth();
   const router = useRouter();
@@ -39,25 +31,38 @@ export function Header({}: HeaderProps) {
    * Handle user sign out
    */
   const handleSignOut = async () => {
-    try {
-      await signOut({ redirect: false });
-      toast.success(t('auth.signOutSuccess'));
-      router.push(`/${locale}`);
-    } catch (error) {
-      toast.error(t('auth.signOutError'));
-    }
+    // No sign out functionality in showcase website header
+    // Admin logout is handled in AdminLayout component
   };
 
   /**
    * Navigation links for categories
    */
   const categoryLinks = [
-    { href: `/${locale}/products?category=shirts`, label: t('categories.shirts.name') },
-    { href: `/${locale}/products?category=pants`, label: t('categories.pants.name') },
-    { href: `/${locale}/products?category=dresses`, label: t('categories.dresses.name') },
-    { href: `/${locale}/products?category=jackets`, label: t('categories.jackets.name') },
-    { href: `/${locale}/products?category=shoes`, label: t('categories.shoes.name') },
-    { href: `/${locale}/products?category=accessories`, label: t('categories.accessories.name') },
+    {
+      href: `/${locale}/products?category=shirts`,
+      label: t("categories.shirts.name"),
+    },
+    {
+      href: `/${locale}/products?category=pants`,
+      label: t("categories.pants.name"),
+    },
+    {
+      href: `/${locale}/products?category=dresses`,
+      label: t("categories.dresses.name"),
+    },
+    {
+      href: `/${locale}/products?category=jackets`,
+      label: t("categories.jackets.name"),
+    },
+    {
+      href: `/${locale}/products?category=shoes`,
+      label: t("categories.shoes.name"),
+    },
+    {
+      href: `/${locale}/products?category=accessories`,
+      label: t("categories.accessories.name"),
+    },
   ];
 
   return (
@@ -65,25 +70,34 @@ export function Header({}: HeaderProps) {
       <div className="container mx-auto px-4">
         <div className="flex h-16 items-center justify-between">
           {/* Logo */}
-          <Link href={`/${locale}`} className="flex items-center space-x-2">
+          <Link
+            href={`/${locale}`}
+            className="flex items-center space-x-2 rtl:space-x-reverse rtl:flex-row-reverse"
+          >
             <ShoppingBag className="h-6 w-6" />
             <span className="text-xl font-bold">Yasser Store</span>
           </Link>
 
           {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center space-x-6">
-            <Link href={`/${locale}`} className="text-sm font-medium hover:text-primary transition-colors">
-              {t('common.home')}
+          <nav className="hidden md:flex items-center space-x-6 rtl:space-x-reverse">
+            <Link
+              href={`/${locale}`}
+              className="text-sm font-medium hover:text-primary transition-colors"
+            >
+              {t("common.home")}
             </Link>
-            <Link href={`/${locale}/products`} className="text-sm font-medium hover:text-primary transition-colors">
-              {t('navigation.allProducts')}
+            <Link
+              href={`/${locale}/products`}
+              className="text-sm font-medium hover:text-primary transition-colors"
+            >
+              {t("navigation.allProducts")}
             </Link>
-            
+
             {/* Category Dropdown */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" className="text-sm font-medium">
-                  {t('common.categories')}
+                  {t("common.categories")}
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent>
@@ -97,7 +111,7 @@ export function Header({}: HeaderProps) {
           </nav>
 
           {/* Right side actions */}
-          <div className="flex items-center space-x-4">
+          <div className="flex items-center space-x-4 rtl:space-x-reverse">
             {/* Language Switcher */}
             <LanguageSwitcher />
 
@@ -115,33 +129,41 @@ export function Header({}: HeaderProps) {
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem asChild>
-                    <Link href={`/${locale}/profile`}>{t('common.profile')}</Link>
+                    <Link href={`/${locale}/profile`}>
+                      {t("common.profile")}
+                    </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild>
-                    <Link href={`/${locale}/orders`}>{t('common.orders')}</Link>
+                    <Link href={`/${locale}/orders`}>{t("common.orders")}</Link>
                   </DropdownMenuItem>
                   {isAdmin && (
                     <>
                       <DropdownMenuSeparator />
                       <DropdownMenuItem asChild>
-                        <Link href={`/${locale}/admin`}>{t('common.admin')}</Link>
+                        <Link href={`/${locale}/admin`}>
+                          {t("common.admin")}
+                        </Link>
                       </DropdownMenuItem>
                     </>
                   )}
                   <DropdownMenuSeparator />
                   <DropdownMenuItem onClick={handleSignOut}>
-                    <LogOut className="mr-2 h-4 w-4" />
-                    {t('common.signout')}
+                    <LogOut className="mr-2 rtl:mr-0 rtl:ml-2 h-4 w-4" />
+                    {t("common.signout")}
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
             ) : (
-              <div className="hidden md:flex items-center space-x-2">
+              <div className="hidden md:flex items-center space-x-2 rtl:space-x-reverse">
                 <Button variant="ghost" asChild>
-                  <Link href={`/${locale}/auth/signin`}>{t('common.signin')}</Link>
+                  <Link href={`/${locale}/auth/signin`}>
+                    {t("common.signin")}
+                  </Link>
                 </Button>
                 <Button asChild>
-                  <Link href={`/${locale}/auth/signup`}>{t('common.signup')}</Link>
+                  <Link href={`/${locale}/auth/signup`}>
+                    {t("common.signup")}
+                  </Link>
                 </Button>
               </div>
             )}
@@ -153,7 +175,11 @@ export function Header({}: HeaderProps) {
               className="md:hidden"
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
             >
-              {isMobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+              {isMobileMenuOpen ? (
+                <X className="h-5 w-5" />
+              ) : (
+                <Menu className="h-5 w-5" />
+              )}
             </Button>
           </div>
         </div>
@@ -162,29 +188,31 @@ export function Header({}: HeaderProps) {
         {isMobileMenuOpen && (
           <div className="md:hidden border-t py-4">
             <nav className="flex flex-col space-y-4">
-              <Link 
-                href={`/${locale}`} 
+              <Link
+                href={`/${locale}`}
                 className="text-sm font-medium hover:text-primary transition-colors"
                 onClick={() => setIsMobileMenuOpen(false)}
               >
-                {t('common.home')}
+                {t("common.home")}
               </Link>
-              <Link 
-                href={`/${locale}/products`} 
+              <Link
+                href={`/${locale}/products`}
                 className="text-sm font-medium hover:text-primary transition-colors"
                 onClick={() => setIsMobileMenuOpen(false)}
               >
-                {t('navigation.allProducts')}
+                {t("navigation.allProducts")}
               </Link>
-              
+
               {/* Mobile Categories */}
               <div className="space-y-2">
-                <p className="text-sm font-medium text-muted-foreground">{t('common.categories')}</p>
+                <p className="text-sm font-medium text-muted-foreground">
+                  {t("common.categories")}
+                </p>
                 {categoryLinks.map((link) => (
                   <Link
                     key={link.href}
                     href={link.href}
-                    className="block text-sm pl-4 hover:text-primary transition-colors"
+                    className="block text-sm pl-4 rtl:pl-0 rtl:pr-4 hover:text-primary transition-colors"
                     onClick={() => setIsMobileMenuOpen(false)}
                   >
                     {link.label}
@@ -196,13 +224,19 @@ export function Header({}: HeaderProps) {
               {!user && (
                 <div className="flex flex-col space-y-2 pt-4 border-t">
                   <Button variant="ghost" asChild>
-                    <Link href={`/${locale}/auth/signin`} onClick={() => setIsMobileMenuOpen(false)}>
-                      {t('common.signin')}
+                    <Link
+                      href={`/${locale}/auth/signin`}
+                      onClick={() => setIsMobileMenuOpen(false)}
+                    >
+                      {t("common.signin")}
                     </Link>
                   </Button>
                   <Button asChild>
-                    <Link href={`/${locale}/auth/signup`} onClick={() => setIsMobileMenuOpen(false)}>
-                      {t('common.signup')}
+                    <Link
+                      href={`/${locale}/auth/signup`}
+                      onClick={() => setIsMobileMenuOpen(false)}
+                    >
+                      {t("common.signup")}
                     </Link>
                   </Button>
                 </div>

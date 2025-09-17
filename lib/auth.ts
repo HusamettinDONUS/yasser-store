@@ -1,90 +1,46 @@
-// NextAuth.js configuration
-import { NextAuthOptions } from "next-auth";
-import CredentialsProvider from "next-auth/providers/credentials";
-import { PrismaAdapter } from "@auth/prisma-adapter";
-import { prisma } from "./prisma";
-import bcrypt from "bcryptjs";
+// Simple authentication helpers for admin-only access
+import { cookies } from "next/headers";
 
-// Generate a fallback secret if none is provided
-const generateFallbackSecret = () => {
-  return Buffer.from(
-    "fallback-development-secret-key-not-for-production-use-only"
-  ).toString("base64");
-};
+export interface SessionData {
+  userId: string;
+  email: string;
+  name?: string;
+  isAdmin: boolean;
+}
 
-export const authOptions: NextAuthOptions = {
-  adapter: PrismaAdapter(prisma) as any,
-  secret: process.env.NEXTAUTH_SECRET || generateFallbackSecret(),
-  providers: [
-    CredentialsProvider({
-      name: "credentials",
-      credentials: {
-        email: { label: "Email", type: "email" },
-        password: { label: "Password", type: "password" },
-      },
-      async authorize(credentials) {
-        if (!credentials?.email || !credentials?.password) {
-          return null;
-        }
+/**
+ * Get current session from cookie
+ */
+export async function getSession(): Promise<SessionData | null> {
+  try {
+    const cookieStore = await cookies();
+    const sessionCookie = cookieStore.get("admin-session");
 
-        try {
-          const user = await prisma.user.findUnique({
-            where: {
-              email: credentials.email,
-            },
-          });
+    if (!sessionCookie) {
+      return null;
+    }
 
-          if (!user) {
-            return null;
-          }
+    const sessionData = JSON.parse(sessionCookie.value);
+    return sessionData;
+  } catch (error) {
+    console.error("Session error:", error);
+    return null;
+  }
+}
 
-          const isPasswordValid = await bcrypt.compare(
-            credentials.password,
-            user.password
-          );
+/**
+ * Check if user is authenticated admin
+ */
+export async function requireAdmin(): Promise<SessionData> {
+  const session = await getSession();
 
-          if (!isPasswordValid) {
-            return null;
-          }
+  if (!session) {
+    throw new Error("Authentication required");
+  }
 
-          return {
-            id: user.id,
-            email: user.email,
-            name: user.name,
-            isAdmin: user.isAdmin,
-          };
-        } catch (error) {
-          console.error("Auth error:", error);
-          return null;
-        }
-      },
-    }),
-  ],
-  session: {
-    strategy: "jwt",
-    maxAge: 30 * 24 * 60 * 60, // 30 days
-  },
-  jwt: {
-    maxAge: 30 * 24 * 60 * 60, // 30 days
-  },
-  callbacks: {
-    async jwt({ token, user }) {
-      if (user) {
-        token.isAdmin = (user as any).isAdmin;
-      }
-      return token;
-    },
-    async session({ session, token }) {
-      if (token) {
-        session.user.id = token.sub!;
-        (session.user as any).isAdmin = token.isAdmin;
-      }
-      return session;
-    },
-  },
-  pages: {
-    signIn: "/auth/signin",
-    signUp: "/auth/signup",
-  },
-  debug: process.env.NODE_ENV === "development",
-};
+  if (!session.isAdmin) {
+    throw new Error("Admin privileges required");
+  }
+
+  return session;
+}

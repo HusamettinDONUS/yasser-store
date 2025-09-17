@@ -1,14 +1,14 @@
 // User registration API endpoint
-import { NextRequest, NextResponse } from 'next/server';
-import bcrypt from 'bcryptjs';
-import { prisma } from '@/lib/prisma';
-import { z } from 'zod';
+import { NextRequest, NextResponse } from "next/server";
+import bcrypt from "bcryptjs";
+import { prisma } from "@/lib/prisma";
+import { z } from "zod";
 
 // Registration schema validation
 const registerSchema = z.object({
-  email: z.string().email('Invalid email address'),
-  password: z.string().min(6, 'Password must be at least 6 characters'),
-  name: z.string().min(2, 'Name must be at least 2 characters').optional()
+  email: z.string().email("Invalid email address"),
+  password: z.string().min(6, "Password must be at least 6 characters"),
+  name: z.string().min(2, "Name must be at least 2 characters").optional(),
 });
 
 /**
@@ -17,19 +17,19 @@ const registerSchema = z.object({
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    
+
     // Validate input
     const validatedData = registerSchema.parse(body);
     const { email, password, name } = validatedData;
 
     // Check if user already exists
     const existingUser = await prisma.user.findUnique({
-      where: { email }
+      where: { email },
     });
 
     if (existingUser) {
       return NextResponse.json(
-        { error: 'User with this email already exists' },
+        { error: "User with this email already exists" },
         { status: 400 }
       );
     }
@@ -43,36 +43,36 @@ export async function POST(request: NextRequest) {
         email,
         password: hashedPassword,
         name,
-        isAdmin: email === process.env.ADMIN_EMAIL // Make first user admin
+        isAdmin: email === process.env.ADMIN_EMAIL, // Make first user admin
       },
       select: {
         id: true,
         email: true,
         name: true,
         isAdmin: true,
-        createdAt: true
-      }
+        createdAt: true,
+      },
     });
 
     return NextResponse.json(
-      { 
-        message: 'User created successfully',
-        user 
+      {
+        message: "User created successfully",
+        user,
       },
       { status: 201 }
     );
   } catch (error) {
-    console.error('Registration error:', error);
-    
+    console.error("Registration error:", error);
+
     if (error instanceof z.ZodError) {
       return NextResponse.json(
-        { error: 'Invalid input data', details: error.errors },
+        { error: "Invalid input data", details: error.issues },
         { status: 400 }
       );
     }
 
     return NextResponse.json(
-      { error: 'Internal server error' },
+      { error: "Internal server error" },
       { status: 500 }
     );
   }

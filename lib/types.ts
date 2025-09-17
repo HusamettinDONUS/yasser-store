@@ -2,22 +2,22 @@
 
 // Product category enum
 export enum ProductCategory {
-  SHIRTS = 'shirts',
-  PANTS = 'pants',
-  DRESSES = 'dresses',
-  JACKETS = 'jackets',
-  SHOES = 'shoes',
-  ACCESSORIES = 'accessories'
+  SHIRTS = "shirts",
+  PANTS = "pants",
+  DRESSES = "dresses",
+  JACKETS = "jackets",
+  SHOES = "shoes",
+  ACCESSORIES = "accessories",
 }
 
 // Product size enum
 export enum ProductSize {
-  XS = 'XS',
-  S = 'S',
-  M = 'M',
-  L = 'L',
-  XL = 'XL',
-  XXL = 'XXL'
+  XS = "XS",
+  S = "S",
+  M = "M",
+  L = "L",
+  XL = "XL",
+  XXL = "XXL",
 }
 
 // Product interface
@@ -60,32 +60,7 @@ export interface User {
   createdAt: Date;
 }
 
-// Cart item interface
-export interface CartItem {
-  productId: string;
-  product: Product;
-  size: ProductSize;
-  color: string;
-  quantity: number;
-}
-
-// Order interface
-export interface Order {
-  id: string;
-  userId: string;
-  items: CartItem[];
-  totalAmount: number;
-  status: 'pending' | 'processing' | 'shipped' | 'delivered' | 'cancelled';
-  shippingAddress: {
-    name: string;
-    address: string;
-    city: string;
-    postalCode: string;
-    country: string;
-  };
-  createdAt: Date;
-  updatedAt: Date;
-}
+// Note: Cart and Order interfaces removed - this is a showcase website only
 
 // Filter options interface
 export interface FilterOptions {

@@ -95,6 +95,13 @@ export default function EditProductPage() {
     try {
       setLoading(true);
       const fetchedProduct = await getProductById(productId);
+
+      if (!fetchedProduct) {
+        toast.error(t("admin.productNotFound"));
+        router.push(`/${locale}/admin/products`);
+        return;
+      }
+
       setProduct(fetchedProduct);
 
       // Populate form
@@ -114,7 +121,7 @@ export default function EditProductPage() {
       setImageUrls(fetchedProduct.images || []);
     } catch (error) {
       console.error("Error fetching product:", error);
-      toast.error("Failed to load product");
+      toast.error(t("common.error"));
       router.push(`/${locale}/admin/products`);
     } finally {
       setLoading(false);
@@ -136,11 +143,11 @@ export default function EditProductPage() {
       };
 
       await updateProduct(productId, productData);
-      toast.success("Product updated successfully");
+      toast.success(t("admin.productSaved"));
       router.push(`/${locale}/admin/products`);
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Error updating product:", error);
-      toast.error(error.message || "Failed to update product");
+      toast.error((error as Error)?.message || t("common.error"));
     } finally {
       setSaving(false);
     }
@@ -228,7 +235,7 @@ export default function EditProductPage() {
         <div className="min-h-screen flex items-center justify-center">
           <div className="flex items-center space-x-2">
             <Loader2 className="h-6 w-6 animate-spin" />
-            <span>Loading product...</span>
+            <span>{t("admin.loadingProduct")}</span>
           </div>
         </div>
       </AdminLayout>
@@ -240,9 +247,13 @@ export default function EditProductPage() {
       <AdminLayout>
         <div className="min-h-screen flex items-center justify-center">
           <div className="text-center">
-            <h2 className="text-2xl font-bold mb-2">Product not found</h2>
+            <h2 className="text-2xl font-bold mb-2">
+              {t("admin.productNotFound")}
+            </h2>
             <Button asChild>
-              <Link href={`/${locale}/admin/products`}>Back to Products</Link>
+              <Link href={`/${locale}/admin/products`}>
+                {t("admin.backToProducts")}
+              </Link>
             </Button>
           </div>
         </div>
@@ -261,30 +272,32 @@ export default function EditProductPage() {
             </Button>
           </Link>
           <div>
-            <h1 className="text-3xl font-bold">Edit Product</h1>
+            <h1 className="text-3xl font-bold">{t("admin.editingProduct")}</h1>
             <p className="text-muted-foreground">
-              Update "{product.name}" details
+              {t("admin.updateProduct", { name: product.name })}
             </p>
           </div>
         </div>
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
             {/* Main Product Info */}
-            <div className="lg:col-span-2 space-y-6">
+            <div className="xl:col-span-2 space-y-6">
               {/* Basic Information */}
               <Card>
                 <CardHeader>
-                  <CardTitle>Basic Information</CardTitle>
-                  <CardDescription>Essential product details</CardDescription>
+                  <CardTitle>{t("admin.basicInformation")}</CardTitle>
+                  <CardDescription>
+                    {t("admin.essentialDetails")}
+                  </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div>
-                    <Label htmlFor="name">Product Name</Label>
+                    <Label htmlFor="name">{t("admin.productName")}</Label>
                     <Input
                       id="name"
                       {...register("name")}
-                      placeholder="Enter product name"
+                      placeholder={t("admin.productName")}
                       className={errors.name ? "border-red-500" : ""}
                     />
                     {errors.name && (
@@ -295,11 +308,13 @@ export default function EditProductPage() {
                   </div>
 
                   <div>
-                    <Label htmlFor="description">Product Description</Label>
+                    <Label htmlFor="description">
+                      {t("admin.productDescription")}
+                    </Label>
                     <Textarea
                       id="description"
                       {...register("description")}
-                      placeholder="Enter product description"
+                      placeholder={t("admin.productDescription")}
                       rows={4}
                       className={errors.description ? "border-red-500" : ""}
                     />
@@ -312,7 +327,7 @@ export default function EditProductPage() {
 
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <Label htmlFor="price">Product Price</Label>
+                      <Label htmlFor="price">{t("admin.productPrice")}</Label>
                       <Input
                         id="price"
                         type="number"
@@ -329,7 +344,9 @@ export default function EditProductPage() {
                     </div>
 
                     <div>
-                      <Label htmlFor="category">Product Category</Label>
+                      <Label htmlFor="category">
+                        {t("admin.productCategory")}
+                      </Label>
                       <Select
                         value={watchedCategory}
                         onValueChange={(value) =>
@@ -339,7 +356,9 @@ export default function EditProductPage() {
                         <SelectTrigger
                           className={errors.category ? "border-red-500" : ""}
                         >
-                          <SelectValue placeholder="Select category" />
+                          <SelectValue
+                            placeholder={t("admin.selectCategory")}
+                          />
                         </SelectTrigger>
                         <SelectContent>
                           {availableCategories.map((category) => (
@@ -363,15 +382,15 @@ export default function EditProductPage() {
               {/* Variants */}
               <Card>
                 <CardHeader>
-                  <CardTitle>Product Variants</CardTitle>
+                  <CardTitle>{t("admin.productVariants")}</CardTitle>
                   <CardDescription>
-                    Sizes, colors, and other options
+                    {t("admin.sizesColorsOptions")}
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   {/* Sizes */}
                   <div>
-                    <Label>Available Sizes</Label>
+                    <Label>{t("admin.availableSizes")}</Label>
                     <div className="flex flex-wrap gap-2 mt-2">
                       {availableSizes.map((size) => (
                         <Button
@@ -391,18 +410,18 @@ export default function EditProductPage() {
 
                   {/* Colors */}
                   <div>
-                    <Label>Available Colors</Label>
+                    <Label>{t("admin.availableColors")}</Label>
                     <div className="flex gap-2 mt-2">
                       <Input
                         value={colorInput}
                         onChange={(e) => setColorInput(e.target.value)}
-                        placeholder="Enter color name"
+                        placeholder={t("admin.enterColorName")}
                         onKeyPress={(e) =>
                           e.key === "Enter" && (e.preventDefault(), addColor())
                         }
                       />
                       <Button type="button" onClick={addColor}>
-                        Add
+                        {t("common.add")}
                       </Button>
                     </div>
                     <div className="flex flex-wrap gap-2 mt-2">
@@ -427,26 +446,46 @@ export default function EditProductPage() {
               {/* Images */}
               <Card>
                 <CardHeader>
-                  <CardTitle>Product Images</CardTitle>
-                  <CardDescription>Upload images or add URLs</CardDescription>
+                  <CardTitle>{t("admin.productImages")}</CardTitle>
+                  <CardDescription>{t("admin.uploadImages")}</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   {/* File Upload */}
                   <div>
-                    <Label htmlFor="file-upload">Upload Images</Label>
+                    <Label htmlFor="file-upload">
+                      {t("admin.uploadImagesLabel")}
+                    </Label>
                     <div className="mt-2">
-                      <input
-                        id="file-upload"
-                        type="file"
-                        multiple
-                        accept="image/*"
-                        onChange={handleFileUpload}
-                        disabled={uploadingFiles}
-                        className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-primary file:text-primary-foreground hover:file:bg-primary/90 disabled:opacity-50"
-                      />
+                      <div className="relative border-2 border-dashed border-muted-foreground/25 rounded-lg p-6 text-center hover:border-muted-foreground/50 transition-colors">
+                        <div className="space-y-2">
+                          <div className="mx-auto h-12 w-12 text-muted-foreground">
+                            <Upload className="h-full w-full" />
+                          </div>
+                          <div className="space-y-1">
+                            <p className="text-sm font-medium">
+                              {t("admin.dragDropImages")}
+                            </p>
+                            <p className="text-xs text-muted-foreground">
+                              {t("admin.maxFileSize")}
+                            </p>
+                            <p className="text-xs text-muted-foreground">
+                              {t("admin.supportedFormats")}
+                            </p>
+                          </div>
+                          <input
+                            id="file-upload"
+                            type="file"
+                            multiple
+                            accept="image/*"
+                            onChange={handleFileUpload}
+                            disabled={uploadingFiles}
+                            className="absolute inset-0 w-full h-full opacity-0 cursor-pointer disabled:cursor-not-allowed"
+                          />
+                        </div>
+                      </div>
                       {uploadingFiles && (
                         <p className="text-sm text-muted-foreground mt-1">
-                          Uploading files...
+                          {t("admin.uploadingFiles")}
                         </p>
                       )}
                     </div>
@@ -454,12 +493,12 @@ export default function EditProductPage() {
 
                   {/* URL Input */}
                   <div>
-                    <Label>Or Add Image URL</Label>
+                    <Label>{t("admin.addImageUrl")}</Label>
                     <div className="flex gap-2 mt-2">
                       <Input
                         value={imageInput}
                         onChange={(e) => setImageInput(e.target.value)}
-                        placeholder="Enter image URL"
+                        placeholder={t("admin.enterImageUrl")}
                         onKeyPress={(e) =>
                           e.key === "Enter" &&
                           (e.preventDefault(), addImageUrl())
@@ -467,31 +506,38 @@ export default function EditProductPage() {
                       />
                       <Button type="button" onClick={addImageUrl}>
                         <Upload className="h-4 w-4 mr-2" />
-                        Add
+                        {t("common.add")}
                       </Button>
                     </div>
                   </div>
 
-                  <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                    {imageUrls.map((url, index) => (
-                      <div key={index} className="relative group">
-                        <img
-                          src={url}
-                          alt={`Product image ${index + 1}`}
-                          className="w-full h-32 object-cover rounded-md border"
-                        />
-                        <Button
-                          type="button"
-                          variant="destructive"
-                          size="icon"
-                          className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity"
-                          onClick={() => removeImageUrl(url)}
-                        >
-                          <X className="h-4 w-4" />
-                        </Button>
+                  {imageUrls.length > 0 && (
+                    <div>
+                      <Label className="text-sm font-medium mb-2 block">
+                        {t("admin.uploadedImages")}
+                      </Label>
+                      <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                        {imageUrls.map((url, index) => (
+                          <div key={index} className="relative group">
+                            <img
+                              src={url}
+                              alt={`Product image ${index + 1}`}
+                              className="w-full h-32 object-cover rounded-md border"
+                            />
+                            <Button
+                              type="button"
+                              variant="destructive"
+                              size="icon"
+                              className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity"
+                              onClick={() => removeImageUrl(url)}
+                            >
+                              <X className="h-4 w-4" />
+                            </Button>
+                          </div>
+                        ))}
                       </div>
-                    ))}
-                  </div>
+                    </div>
+                  )}
                 </CardContent>
               </Card>
             </div>
@@ -501,12 +547,16 @@ export default function EditProductPage() {
               {/* Inventory */}
               <Card>
                 <CardHeader>
-                  <CardTitle>Inventory</CardTitle>
-                  <CardDescription>Stock and availability</CardDescription>
+                  <CardTitle>{t("admin.inventory")}</CardTitle>
+                  <CardDescription>
+                    {t("admin.stockAvailability")}
+                  </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div>
-                    <Label htmlFor="stockQuantity">Stock Quantity</Label>
+                    <Label htmlFor="stockQuantity">
+                      {t("admin.stockQuantity")}
+                    </Label>
                     <Input
                       id="stockQuantity"
                       type="number"
@@ -522,7 +572,7 @@ export default function EditProductPage() {
                   </div>
 
                   <div className="flex items-center justify-between">
-                    <Label htmlFor="inStock">In Stock</Label>
+                    <Label htmlFor="inStock">{t("admin.inStock")}</Label>
                     <Switch
                       id="inStock"
                       checked={watchedInStock}
@@ -533,7 +583,9 @@ export default function EditProductPage() {
                   </div>
 
                   <div className="flex items-center justify-between">
-                    <Label htmlFor="featured">Featured Product</Label>
+                    <Label htmlFor="featured">
+                      {t("admin.featuredProduct")}
+                    </Label>
                     <Switch
                       id="featured"
                       checked={watchedFeatured}
@@ -548,17 +600,17 @@ export default function EditProductPage() {
               {/* Actions */}
               <Card>
                 <CardHeader>
-                  <CardTitle>Actions</CardTitle>
+                  <CardTitle>{t("admin.actions")}</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <Button type="submit" className="w-full" disabled={saving}>
                     {saving ? (
                       <>
                         <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                        Updating...
+                        {t("admin.updating")}
                       </>
                     ) : (
-                      "Update Product"
+                      t("admin.updateProductBtn")
                     )}
                   </Button>
                   <Button
@@ -567,7 +619,9 @@ export default function EditProductPage() {
                     className="w-full"
                     asChild
                   >
-                    <Link href={`/${locale}/admin/products`}>Cancel</Link>
+                    <Link href={`/${locale}/admin/products`}>
+                      {t("common.cancel")}
+                    </Link>
                   </Button>
                 </CardContent>
               </Card>
