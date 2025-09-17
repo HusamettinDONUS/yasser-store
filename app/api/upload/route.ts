@@ -1,10 +1,11 @@
-// File upload API endpoint using Vercel Blob
+// File upload API endpoint using local filesystem
 import { NextRequest, NextResponse } from "next/server";
-import { put } from "@vercel/blob";
+import { writeFile, unlink } from "fs/promises";
+import { join } from "path";
 import { requireAdmin } from "@/lib/auth";
 
 /**
- * Handle file upload to Vercel Blob storage
+ * Handle file upload to local filesystem
  */
 export async function POST(request: NextRequest) {
   try {
@@ -57,17 +58,30 @@ export async function POST(request: NextRequest) {
 
     // Generate unique filename
     const timestamp = Date.now();
-    const uniqueFilename = `products/${timestamp}-${filename}`;
+    const uniqueFilename = `${timestamp}-${filename}`;
 
-    // Upload to Vercel Blob
-    const blob = await put(uniqueFilename, body, {
-      access: "public",
-      addRandomSuffix: false,
-    });
+    // Convert blob to buffer
+    const bytes = await body.arrayBuffer();
+    const buffer = Buffer.from(bytes);
+
+    // Create file path
+    const filePath = join(
+      process.cwd(),
+      "public",
+      "uploads",
+      "products",
+      uniqueFilename
+    );
+
+    // Write file to local filesystem
+    await writeFile(filePath, buffer);
+
+    // Generate public URL
+    const publicUrl = `/uploads/products/${uniqueFilename}`;
 
     return NextResponse.json({
       success: true,
-      url: blob.url,
+      url: publicUrl,
       filename: uniqueFilename,
       size: body.size,
       type: body.type,
@@ -82,7 +96,7 @@ export async function POST(request: NextRequest) {
 }
 
 /**
- * Handle file deletion from Vercel Blob storage
+ * Handle file deletion from local filesystem
  */
 export async function DELETE(request: NextRequest) {
   try {
@@ -99,13 +113,32 @@ export async function DELETE(request: NextRequest) {
       );
     }
 
-    // Note: Vercel Blob doesn't have a direct delete API in the free tier
-    // Files will be automatically cleaned up based on your Vercel plan
-    // For now, we'll just return success
+    // Extract filename from URL
+    const filename = url.split("/").pop();
+    if (!filename) {
+      return NextResponse.json({ error: "Invalid file URL" }, { status: 400 });
+    }
+
+    // Create file path
+    const filePath = join(
+      process.cwd(),
+      "public",
+      "uploads",
+      "products",
+      filename
+    );
+
+    // Delete file from local filesystem
+    try {
+      await unlink(filePath);
+    } catch (error) {
+      // File might not exist, which is fine
+      console.log("File not found or already deleted:", filename);
+    }
 
     return NextResponse.json({
       success: true,
-      message: "File deletion requested",
+      message: "File deleted successfully",
     });
   } catch (error) {
     console.error("Delete error:", error);
