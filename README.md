@@ -1,36 +1,111 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Yasser Store - E-commerce Platform
 
-## Getting Started
+Modern, tam özellikli e-ticaret uygulaması. Next.js, TypeScript, Prisma ve NextAuth ile geliştirilmiş.
 
-First, run the development server:
+## 🚀 Özellikler
+
+- 🛍️ **Tam E-ticaret Sistemi**: Ürün katalogu, sepet, sipariş yönetimi
+- 🔐 **Güvenli Authentication**: NextAuth ile kullanıcı giriş/kayıt
+- 👨‍💼 **Admin Paneli**: Ürün ve sipariş yönetimi
+- 🌐 **Çoklu Dil**: Türkçe, Arapça, İngilizce desteği
+- 📱 **Responsive Design**: Tüm cihazlarda mükemmel görünüm
+- 🎨 **Modern UI**: Shadcn/ui + TailwindCSS
+
+## 🛠️ Teknoloji Stack
+
+- **Framework**: Next.js 15 (App Router)
+- **Language**: TypeScript
+- **Database**: PostgreSQL + Prisma ORM
+- **Auth**: NextAuth.js
+- **Styling**: TailwindCSS + Shadcn/ui
+- **Forms**: React Hook Form + Zod
+- **Deployment**: Vercel + Vercel Postgres
+
+## 📦 Kurulum
+
+1. **Repository'yi klonlayın**
+
+```bash
+git clone <repository-url>
+cd yasser-store
+```
+
+2. **Dependencies'leri yükleyin**
+
+```bash
+npm install
+```
+
+3. **Environment variables'ı ayarlayın**
+
+```bash
+# .env.local dosyası oluşturun ve aşağıdaki değişkenleri ekleyin:
+
+# Database (Development için SQLite, Production için PostgreSQL)
+DATABASE_URL="file:./dev.db"
+
+# NextAuth
+NEXTAUTH_URL="http://localhost:3000"
+NEXTAUTH_SECRET="your-secret-key"
+
+# Admin
+ADMIN_EMAIL="admin@example.com"
+```
+
+4. **Database'i hazırlayın**
+
+```bash
+npx prisma generate
+npx prisma db push
+```
+
+5. **Development server'ı başlatın**
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 🚢 Vercel'e Deployment
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### 1. Vercel Postgres Database Oluşturun
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- Vercel dashboard → Storage → Create Database
+- PostgreSQL seçin
+- Connection string'i kopyalayın
 
-## Learn More
+### 2. Environment Variables (Vercel Dashboard)
 
-To learn more about Next.js, take a look at the following resources:
+```bash
+DATABASE_URL="your-vercel-postgres-url"
+DIRECT_URL="your-vercel-postgres-direct-url"
+NEXTAUTH_URL="https://your-domain.vercel.app"
+NEXTAUTH_SECRET="secure-random-string"
+ADMIN_EMAIL="your-admin-email"
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### 3. Deploy
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```bash
+npm run vercel-build  # Test build locally
+vercel --prod         # Deploy to production
+```
 
-## Deploy on Vercel
+## 📋 Available Scripts
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- `npm run dev` - Development server
+- `npm run build` - Production build
+- `npm run start` - Start production server
+- `npm run vercel-build` - Vercel deployment build
+- `npm run db:push` - Push database schema
+- `npm run db:studio` - Open Prisma Studio
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## 🔑 Admin Kurulumu
+
+1. Uygulamayı deploy edin
+2. `ADMIN_EMAIL` ile kayıt olun
+3. Otomatik admin yetkisi alacaksınız
+4. Admin paneline `/admin` üzerinden erişin
+
+## 📖 Detaylı Deployment Guide
+
+Detaylı deployment rehberi için `DEPLOYMENT.md` dosyasına bakın.

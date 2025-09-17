@@ -8,9 +8,11 @@
     "start": "next start",
     "lint": "eslint",
     "postinstall": "prisma generate",
+    "setup": "node scripts/setup-dev.js && prisma generate && prisma db push",
     "db:push": "prisma db push",
     "db:migrate": "prisma migrate dev",
     "db:studio": "prisma studio",
+    "db:reset": "prisma migrate reset",
     "vercel-build": "prisma generate && prisma db push && next build"
   },
   "dependencies": {

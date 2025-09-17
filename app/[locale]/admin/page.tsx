@@ -2,7 +2,7 @@
 
 // Admin dashboard page component
 import React, { useEffect, useState } from "react";
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
 import {
   Package,
   ShoppingCart,
@@ -33,6 +33,7 @@ import Link from "next/link";
 export default function AdminDashboardPage() {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
+  const locale = useLocale();
   // const t = useTranslations();
 
   /**
@@ -245,25 +246,25 @@ export default function AdminDashboardPage() {
             <CardContent>
               <div className="grid grid-cols-1 gap-3">
                 <Button className="justify-start" asChild>
-                  <Link href="/admin/products/new">
+                  <Link href={`/${locale}/admin/products/new`}>
                     <Package className="mr-2 h-4 w-4" />
                     Add New Product
                   </Link>
                 </Button>
                 <Button variant="outline" className="justify-start" asChild>
-                  <Link href="/admin/products">
+                  <Link href={`/${locale}/admin/products`}>
                     <Eye className="mr-2 h-4 w-4" />
                     View All Products
                   </Link>
                 </Button>
                 <Button variant="outline" className="justify-start" asChild>
-                  <Link href="/admin/orders">
+                  <Link href={`/${locale}/admin/orders`}>
                     <ShoppingCart className="mr-2 h-4 w-4" />
                     Manage Orders
                   </Link>
                 </Button>
                 <Button variant="outline" className="justify-start" asChild>
-                  <Link href="/admin/customers">
+                  <Link href={`/${locale}/admin/customers`}>
                     <Users className="mr-2 h-4 w-4" />
                     View Customers
                   </Link>

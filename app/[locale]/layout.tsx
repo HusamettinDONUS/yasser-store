@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { getMessages } from "next-intl/server";
 import { Inter, Montserrat } from "next/font/google";
 import { notFound } from "next/navigation";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
 import { locales } from "@/i18n/request";
 import "../globals.css";
 import ClientLayoutWrapper from "./ClientLayoutWrapper";
@@ -34,12 +36,28 @@ export default async function RootLayout({
 
   if (!locales.includes(locale as (typeof locales)[number])) notFound();
 
-  const messages = await getMessages({ locale });
+  let messages: Record<string, any> = {};
+  let session = null;
+
+  try {
+    [messages, session] = await Promise.all([
+      getMessages({ locale }).catch(() => ({})),
+      getServerSession(authOptions).catch(() => null),
+    ]);
+  } catch (error) {
+    console.warn("Failed to load session or messages:", error);
+    messages = {};
+    session = null;
+  }
 
   return (
     <html lang={locale} dir="ltr">
       <body className={`${inter.variable} ${montserrat.variable} antialiased`}>
-        <ClientLayoutWrapper session={null} messages={messages} locale={locale}>
+        <ClientLayoutWrapper
+          session={session}
+          messages={messages}
+          locale={locale}
+        >
           {children}
         </ClientLayoutWrapper>
       </body>
