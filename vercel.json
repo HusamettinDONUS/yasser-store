@@ -9,7 +9,8 @@
     "DIRECT_URL": "@direct_url",
     "NEXTAUTH_URL": "@nextauth_url",
     "NEXTAUTH_SECRET": "@nextauth_secret",
-    "ADMIN_EMAIL": "@admin_email"
+    "ADMIN_EMAIL": "@admin_email",
+    "PRISMA_DATABASE_URL": "@prisma_database_url"
   },
   "build": {
     "env": {
