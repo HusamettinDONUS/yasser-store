@@ -3,9 +3,8 @@
 // Header navigation component for the storefront
 import React, { useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { useTranslations, useLocale } from "next-intl";
-import { ShoppingBag, Menu, X, User, LogOut } from "lucide-react";
+import { ShoppingBag, Menu, X, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -23,17 +22,8 @@ import { useAuth } from "@/contexts/AuthContext";
 export function Header() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { user, isAdmin } = useAuth();
-  const router = useRouter();
   const t = useTranslations();
   const locale = useLocale();
-
-  /**
-   * Handle user sign out
-   */
-  const handleSignOut = async () => {
-    // No sign out functionality in showcase website header
-    // Admin logout is handled in AdminLayout component
-  };
 
   /**
    * Navigation links for categories
@@ -116,57 +106,7 @@ export function Header() {
             <LanguageSwitcher />
 
             {/* User Menu */}
-            {user ? (
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="icon">
-                    <User className="h-5 w-5" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                  <DropdownMenuItem disabled>
-                    {user.displayName || user.email}
-                  </DropdownMenuItem>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem asChild>
-                    <Link href={`/${locale}/profile`}>
-                      {t("common.profile")}
-                    </Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem asChild>
-                    <Link href={`/${locale}/orders`}>{t("common.orders")}</Link>
-                  </DropdownMenuItem>
-                  {isAdmin && (
-                    <>
-                      <DropdownMenuSeparator />
-                      <DropdownMenuItem asChild>
-                        <Link href={`/${locale}/admin`}>
-                          {t("common.admin")}
-                        </Link>
-                      </DropdownMenuItem>
-                    </>
-                  )}
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem onClick={handleSignOut}>
-                    <LogOut className="mr-2 rtl:mr-0 rtl:ml-2 h-4 w-4" />
-                    {t("common.signout")}
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            ) : (
-              <div className="hidden md:flex items-center space-x-2 rtl:space-x-reverse">
-                <Button variant="ghost" asChild>
-                  <Link href={`/${locale}/auth/signin`}>
-                    {t("common.signin")}
-                  </Link>
-                </Button>
-                <Button asChild>
-                  <Link href={`/${locale}/auth/signup`}>
-                    {t("common.signup")}
-                  </Link>
-                </Button>
-              </div>
-            )}
+            {user && <Link href={`/${locale}/admin`}>{t("common.admin")}</Link>}
 
             {/* Mobile menu button */}
             <Button
@@ -219,28 +159,6 @@ export function Header() {
                   </Link>
                 ))}
               </div>
-
-              {/* Mobile Auth */}
-              {!user && (
-                <div className="flex flex-col space-y-2 pt-4 border-t">
-                  <Button variant="ghost" asChild>
-                    <Link
-                      href={`/${locale}/auth/signin`}
-                      onClick={() => setIsMobileMenuOpen(false)}
-                    >
-                      {t("common.signin")}
-                    </Link>
-                  </Button>
-                  <Button asChild>
-                    <Link
-                      href={`/${locale}/auth/signup`}
-                      onClick={() => setIsMobileMenuOpen(false)}
-                    >
-                      {t("common.signup")}
-                    </Link>
-                  </Button>
-                </div>
-              )}
             </nav>
           </div>
         )}

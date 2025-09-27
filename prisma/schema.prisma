@@ -24,20 +24,38 @@ model User {
 // NextAuth.js models removed - using simple session-based auth for admin
 
 // Product model - simplified for showcase website
+
+enum ProductCategory {
+  MEN
+  WOMEN
+  KIDS
+  ACCESSORIES
+  JACKETS
+}
+
+enum ProductSize {
+  XS
+  S
+  M
+  L
+  XL
+  XXL
+}
+
 model Product {
-  id            String      @id @default(cuid())
-  name          String
-  description   String
-  price         Float
-  category      String
-  sizes         String      // JSON string array
-  colors        String      // JSON string array
-  images        String      // JSON string array
-  inStock       Boolean     @default(true)
-  stockQuantity Int         @default(0)
-  featured      Boolean     @default(false)
-  createdAt     DateTime    @default(now())
-  updatedAt     DateTime    @updatedAt
+  id          String   @id @default(uuid())
+  name        String
+  description String
+  price       Float
+  images      String   @default("[]") // JSON string storing Vercel Blob URLs
+  category    ProductCategory
+  sizes       String   @default("[]") // JSON string storing product sizes
+  colors      String   @default("[]") // JSON string storing product colors
+  stockQuantity Int
+  inStock     Boolean
+  featured    Boolean
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }
 
 // Cart and Order models removed - this is a showcase website only

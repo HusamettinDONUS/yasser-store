@@ -9,7 +9,7 @@ const createProductSchema = z.object({
   name: z.string().min(1, "Product name is required"),
   description: z.string().min(1, "Product description is required"),
   price: z.number().positive("Price must be positive"),
-  category: z.string().min(1, "Category is required"),
+  category: z.enum(["MEN", "WOMEN", "KIDS", "ACCESSORIES", "JACKETS"]),
   sizes: z.array(z.string()).optional().default([]),
   colors: z.array(z.string()).optional().default([]),
   images: z.array(z.string()).optional().default([]),

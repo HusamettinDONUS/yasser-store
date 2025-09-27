@@ -72,3 +72,18 @@ export interface FilterOptions {
   inStock?: boolean;
   featured?: boolean;
 }
+
+// File upload types
+export interface UploadResult {
+  success: boolean;
+  error?: string;
+  url?: string;
+  downloadUrl?: string;
+  pathname?: string;
+}
+
+export interface UseFileUploadReturn {
+  uploading: boolean;
+  uploadFile: (file: File) => Promise<UploadResult>;
+  uploadMultipleFiles: (files: File[]) => Promise<UploadResult[]>;
+}

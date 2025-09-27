@@ -5,7 +5,7 @@ import React, { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useLocale } from "next-intl";
 import { useAuth } from "@/contexts/AuthContext";
-import { useState } from "react";
+import { Header } from "../layout/Header";
 
 interface AdminLayoutProps {
   children: React.ReactNode;
@@ -15,7 +15,6 @@ interface AdminLayoutProps {
  * Admin layout component with sidebar navigation
  */
 export function AdminLayout({ children }: AdminLayoutProps) {
-  const [sidebarOpen, setSidebarOpen] = useState(false);
   const { user, loading, isAdmin } = useAuth();
   const router = useRouter();
   const locale = useLocale();
@@ -45,13 +44,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-      {/* Mobile sidebar overlay */}
-      {sidebarOpen && (
-        <div
-          className="fixed inset-0 z-40 bg-black bg-opacity-50 lg:hidden"
-          onClick={() => setSidebarOpen(false)}
-        />
-      )}
+      <Header />
 
       {/* Page content */}
       <main className="p-4 sm:p-6">{children}</main>
