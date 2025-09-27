@@ -8,14 +8,19 @@ import { z } from "zod";
 const createProductSchema = z.object({
   name: z.string().min(1, "Product name is required"),
   description: z.string().min(1, "Product description is required"),
-  price: z.number().positive("Price must be positive"),
-  category: z.enum(["MEN", "WOMEN", "KIDS", "ACCESSORIES", "JACKETS"]),
+  price: z.coerce.number().positive("Price must be positive"), // Use coerce to handle string inputs
+  category: z
+    .string()
+    .transform((val) => val.trim().toUpperCase()) // Normalize to uppercase
+    .pipe(
+      z.enum(["SHIRTS", "PANTS", "DRESSES", "JACKETS", "SHOES", "ACCESSORIES"])
+    ),
   sizes: z.array(z.string()).optional().default([]),
   colors: z.array(z.string()).optional().default([]),
   images: z.array(z.string()).optional().default([]),
-  inStock: z.boolean().default(true),
-  stockQuantity: z.number().int().min(0).default(0),
-  featured: z.boolean().default(false),
+  inStock: z.coerce.boolean().default(true), // Handle string booleans
+  stockQuantity: z.coerce.number().int().min(0).default(0), // Coerce to number
+  featured: z.coerce.boolean().default(false),
 });
 
 /**

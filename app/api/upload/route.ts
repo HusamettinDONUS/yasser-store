@@ -38,6 +38,15 @@ export async function DELETE(request: NextRequest) {
   try {
     await requireAdmin();
 
+    // Add this check
+    if (!process.env.BLOB_READ_WRITE_TOKEN) {
+      console.error("BLOB_READ_WRITE_TOKEN is missing!");
+      return NextResponse.json(
+        { error: "Server configuration error" },
+        { status: 500 }
+      );
+    }
+
     const { searchParams } = new URL(request.url);
     const url = searchParams.get("url");
 

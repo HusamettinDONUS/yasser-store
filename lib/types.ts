@@ -2,12 +2,12 @@
 
 // Product category enum
 export enum ProductCategory {
-  SHIRTS = "shirts",
-  PANTS = "pants",
-  DRESSES = "dresses",
-  JACKETS = "jackets",
-  SHOES = "shoes",
-  ACCESSORIES = "accessories",
+  SHIRTS = "SHIRTS",
+  PANTS = "PANTS",
+  DRESSES = "DRESSES",
+  JACKETS = "JACKETS",
+  SHOES = "SHOES",
+  ACCESSORIES = "ACCESSORIES",
 }
 
 // Product size enum
